@@ -1,12 +1,13 @@
 import re
+from collections import deque
 
 class Token():
     def __init__(self, t='', v=''):
-        self.typ = t #'integer', 'operator', 'EOF'
-        self.val = v # '1', '2' ... '9', '+', 'EOF'
+        self.typ = t #'integer', 'operator', 'EOF', 'float'
+        self.val = v # '[1-9]', '[+-*/()]', 'EOF'
     
     def __str__(self):
-        return 'Token({}, {})'.format(
+        return 'Token(\'{}\', \'{}\')'.format(
             self.typ,
             self.val
         )
@@ -21,14 +22,14 @@ def lex(text):
     cur_typ = ''
 
     re_space = re.compile(r'\s')
-    re_operator = re.compile(r'[-+*/]')
+    re_operator = re.compile(r'[-+*/()]')
     re_digit = re.compile(r'\d')
     for ch in text:
         if re_space.match(ch): # match
             continue # ignore the space character
         else: # not space
             typ = 'integer' if re_digit.match(ch) else 'operator'
-            flg_new_tkn = cur_typ != typ
+            flg_new_tkn = not (cur_typ=='integer' and typ=='integer') # not a number
             if flg_new_tkn:
                 token_stream.append(tkn)
                 cur_typ = typ
@@ -39,17 +40,53 @@ def lex(text):
     token_stream.append(Token('EOF','EOF'))
     return token_stream[1:] #the first token is empty
 
+def parse(token_stream):
+    # infix to suffix (prefix, infix, suffix)
+    priority = {'+':1, '-':1, '*': 2, '/':2, '(':0}
+    S1 = deque()
+    S2 = deque()
+    for tkn in token_stream[:-1]: #exclude the EOP token
+        if tkn.typ == 'integer':
+            S1.append(tkn)
+        else:
+            if len(S2)==0 or tkn.val=='(':
+                S2.append(tkn)
+            elif tkn.val == ')':
+                while S2[-1].val!='(':
+                    S1.append(S2.pop())
+                S2.pop()
+            else:
+                while len(S2)!=0 and (priority[tkn.val] < priority[S2[-1].val]):
+                    S1.append(S2.pop())
+                S2.append(tkn)
+    while len(S2)!=0:
+        S1.append(S2.pop())
+    return S1
+
 def Interpre_top(text):
     # lexical analysis: get the token stream
     token_stream = lex(text)
+    # print(token_stream)
     # parse
-    # semantic: a <op> b
-    a, b = int(token_stream[0].val), int(token_stream[2].val)
-    op = token_stream[1].val
-    return  a + b if op=='+' else\
-            a - b if op=='-' else\
-            a * b if op=='*' else\
-            a / b
+    # # semantic: a suffix expression
+    suffix_deque = parse(token_stream)
+    # print(suffix_deque)
+    Stack = deque() # number, not str
+    while len(suffix_deque)!=0:
+        # print(Stack)
+        tkn = suffix_deque.popleft()
+        if tkn.typ=='integer':
+            Stack.append(int(tkn.val))
+        else:
+            b = Stack.pop()
+            a = Stack.pop()
+            op = tkn.val
+            c = a + b if op=='+' else\
+                a - b if op=='-' else\
+                a * b if op=='*' else\
+                a / b
+            Stack.append(c)
+    return Stack.pop()
 
 def main():
     counter = 0
