@@ -88,12 +88,30 @@ def Interpre_top(text):
             Stack.append(c)
     return Stack.pop()
 
+def welcome():
+    welcm = r'''
+     ____                 _     
+    /\  _`\             /' \            C-1 (compiler-1) is a
+    \ \ \/\_\          /\_, \           experimental compiler
+     \ \ \/_/_  _______\/_/\ \          for class 《编译原理》  
+      \ \ \L\ \/\______\  \ \ \                              
+       \ \____/\/______/   \ \_\                             
+        \/___/              \/_/                                
+                                                            
+    '''
+    print(welcm)
+    print("")
+    print("It's simple now, it can:")
+    print("1) caculate 10*(1+4)-(8/2+(3-2))*10")
+    print("...\n")
+
 def main():
+    welcome()
     counter = 0
     while True:
         try:
             text = input("In[{}]: ".format(counter))
-            if text:
+            if re.match(r'^[-+*/()\d\s]+$', text):
                 ans = Interpre_top(text)
                 print("Out[{}]: {}".format(counter, ans))
                 counter += 1
