@@ -16,6 +16,7 @@ class Token():
         return self.__str__()
 
 def lex(text):
+    '''convert input to token_stream'''
     token_stream = []
     flg_new_tkn = True
     tkn = Token()
@@ -41,7 +42,9 @@ def lex(text):
     return token_stream[1:] #the first token is empty
 
 def parse(token_stream):
-    # infix to suffix (prefix, infix, suffix)
+    '''Convert infix to suffix (prefix, infix, suffix)
+    return suffix deque
+    '''
     priority = {'+':1, '-':1, '*': 2, '/':2, '(':0}
     S1 = deque()
     S2 = deque()
@@ -63,19 +66,13 @@ def parse(token_stream):
         S1.append(S2.pop())
     return S1
 
-def Interpre_top(text):
-    # lexical analysis: get the token stream
-    token_stream = lex(text)
-    # print(token_stream)
-    # parse
-    # # semantic: a suffix expression
-    suffix_deque = parse(token_stream)
-    # print(suffix_deque)
-    Stack = deque() # number, not str
+def execute(suffix_deque, show_instr=True):
+    Stack = deque() # stack computer use the stack, not registers
     while len(suffix_deque)!=0:
-        # print(Stack)
         tkn = suffix_deque.popleft()
         if tkn.typ=='integer':
+            if show_instr:
+                print('PUSH', int(tkn.val))
             Stack.append(int(tkn.val))
         else:
             b = Stack.pop()
@@ -85,8 +82,21 @@ def Interpre_top(text):
                 a - b if op=='-' else\
                 a * b if op=='*' else\
                 a / b
+            if show_instr:
+                print(op, '->', c)
             Stack.append(c)
     return Stack.pop()
+
+def Interpre_top(text):
+    # lexical analysis: get the token stream
+    token_stream = lex(text)
+    # print(token_stream)
+    # parse
+    suffix_deque = parse(token_stream)
+    # print(suffix_deque)
+    # semantic: a suffix expression
+    # generate object code: use the suffix expression as obj-code
+    return execute(suffix_deque, show_instr=True)
 
 def welcome():
     welcm = r'''
@@ -116,6 +126,7 @@ def main():
                 print("Out[{}]: {}".format(counter, ans))
                 counter += 1
             else:
+                print('bad input')
                 continue
         except EOFError:
             print('EOF, exit')
