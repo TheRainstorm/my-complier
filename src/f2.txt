@@ -1,0 +1,10 @@
+#include <stdio.h>
+
+int main(){
+    /***comment1 **/
+    for(int i=0; i<10000; i++){
+        cout<<"hello"\
+              "world!"<<endl; //comment2
+    }
+    return 0;
+}

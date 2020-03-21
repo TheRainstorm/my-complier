@@ -1,0 +1,12 @@
+There are several approaches. The ones I recommend are.
+
+Provide your own yywrap() function.Since my compilers 
+usually allow multiple source files, I prefer to define
+my own yywrap(). I'm compiling with C++, but the point 
+should be obvious. If someone calls the compiler with
+multiple source files, I store them in a list or array
+# include <f2.txt> 
+, and then yywrap() is called at the end of each 
+file to give you a chance to continue with a new file.
+NOTE: getNextFile() or compiler->getNextFile() are my 
+own functions, not flex functions.
