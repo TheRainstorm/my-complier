@@ -1,2 +1,2 @@
-you are welcome!
-ZzZzzZZz...
+enum coo{A, B, C};
+void foo(void);

@@ -64,6 +64,18 @@ uint g_id_cnt=0; //记录符号的编号id，从1开始递增
 uint hash(char *);
 symbol g_symtab[NHASH];
 symbol * lookup(char *);
+
+/* #include */
+typedef struct bufstack{
+    struct bufstack *next_buf;
+    YY_BUFFER_STATE bs;
+    char *filename;
+    int lineno;
+    FILE *fp;
+}bufstack;
+bufstack *cur_buf;
+int push_file(char *);
+int pop_file();
 %}
 NUM                 ([0-9]|[1-9][0-9]*)
 EXP                 (E[-+]?([0-9]|[1-9][0-9]*))
@@ -127,19 +139,34 @@ L?\"([^\\"]|\\['"\\abfnrtv]|\\0[0-7]{0,3}|\\0[xX][0-9a-fA-F]{1,2})*\"   {return 
     /*注释2*/
 "/*"                {BEGIN COMMENT;}
 <COMMENT>"*/"       {BEGIN INITIAL;}
-<COMMENT>[^*]+|.|\n /* [^*]+ is for speed up. */
+<COMMENT>[^*]+|.|\n /* Match 1 char every time. when meet * / use the rule above.
+                        [^*]+ is for speed up. */
 <COMMENT><<EOF>>    {fprintf(yyout, "Comment are not close!");}
 "*/"                {fprintf(yyout, "Comment are not close!");}
-    /*#开头，暂时直接忽略#行*/
-"#".*$              
+ /*#include */
+^#[ \t]*include[ \t]*[<"]  {BEGIN INCLUDE; }
+<INCLUDE>[^ \t\n">]+    {
+                            {
+                                char ch;
+                                while((ch=input())&&ch!='\n');
+                            }
+                            fprintf(yyout, "Include %s\n", yytext);
+                            push_file(yytext);
+                            BEGIN INITIAL;
+                        }
+<<EOF>>             {
+                        fprintf(yyout, "Pop %s\n", cur_buf->filename);
+                        if(!pop_file()) yyterminate();
+                    }      
  /*无效字符*/
-.                   {fprintf(yyout, "Invaild character on line: %d", yylineno);}
+.                   {fprintf(yyout, "Invaild character on %s:%4d\n", cur_buf->filename, yylineno);}
 %%
 
 void print_result();
 
 int main(int argc, char **argv){
     memset(g_symtab, '\0', sizeof(symbol)*NHASH);
+    cur_buf = NULL;
 
     if(argc==1){ //stdin
         yylineno = 1;
@@ -148,16 +175,10 @@ int main(int argc, char **argv){
         return 0;       
     }
 
-    FILE *f;
     int i;
     for(i=1;i<argc;i++){ //read every file
-        f = fopen(argv[i], "r");
-        if(!f){printf("Open file %s faild", argv[i]); return -1;}
-        yyrestart(f);
-        yylineno = 1;
-
+        push_file(argv[i]);
         print_result();
-        fclose(f);
     }
     return 0;
 }
@@ -195,7 +216,8 @@ void print_result(){
     printf("(number)\ttoken_code\torigin_num\tnum_value\n");
     printf("(other)\ttoken_code\n");
     enum token_type tkn;
-    while((tkn=yylex())!=0){
+    while(1){
+        tkn=yylex();
         if(tkn==ID){
             symbol *sym_ptr = lookup(yytext); //add new item in table when not find;
             printf("%4d\t%d\t%s\n", tkn, sym_ptr->id, sym_ptr->str);
@@ -211,4 +233,41 @@ void print_result(){
             printf("%4d\n", tkn);
         }
     }
+}
+
+int push_file(char *filename){
+    //save lineno
+    if(cur_buf!=NULL){
+        cur_buf->lineno = yylineno + 1;
+    }
+    //new buf
+    FILE *fp = fopen(filename, "r");
+    if(!fp){fprintf(yyout, "open file %s failed.\n", filename); exit(-1);}
+
+    bufstack *buf = malloc(sizeof(bufstack));
+    buf->next_buf = cur_buf;
+    cur_buf = buf;
+    buf->bs = yy_create_buffer(fp, YY_BUF_SIZE);
+    buf->filename = filename;
+    buf->fp = fp;
+
+    yy_switch_to_buffer(cur_buf->bs);
+    yylineno = 1;
+    return 0;
+}
+
+int pop_file(){
+    //delete
+    bufstack *buf = cur_buf;
+    cur_buf = buf->next_buf;
+    fclose(buf->fp);
+    yy_delete_buffer(buf->bs);
+
+    //resume lineno
+    if(cur_buf==NULL){
+        return 0; //empty stack
+    }
+    yylineno = cur_buf->lineno;
+    yy_switch_to_buffer(cur_buf->bs);
+    return 1;
 }
