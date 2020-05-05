@@ -1,6 +1,8 @@
 %option noyywrap nodefault yylineno
 %x COMMENT
 %x INCLUDE
+
+
 %{
 #include <stdio.h>
 #include <stdlib.h>
@@ -77,10 +79,14 @@ bufstack *cur_buf;
 int push_file(char *);
 int pop_file();
 %}
+
+
 NUM                 ([0-9]|[1-9][0-9]*)
 EXP                 (E[-+]?([0-9]|[1-9][0-9]*))
 I_TYPE              (([uU]?(l|L|ll|LL)?)|((l|L|ll|LL)?[uU]?))
 F_TYPE              (f|F|l|L)
+
+
 %%
  /*关键字*/
 if                  {return IF;     }
@@ -161,6 +167,7 @@ L?\"([^\\"]|\\['"\\abfnrtv]|\\0[0-7]{0,3}|\\0[xX][0-9a-fA-F]{1,2})*\"   {return 
  /*无效字符*/
 .                   {fprintf(yyout, "Invaild character on %s:%4d\n", cur_buf->filename, yylineno);}
 %%
+
 
 void print_result();
 

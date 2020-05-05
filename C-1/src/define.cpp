@@ -1,0 +1,85 @@
+#include "define.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <string>
+
+std::string debug_token_type_label(Token_type type) {
+    switch (type)
+    {
+    case ID:
+        return "ID";
+    case INTEGER:
+        return "INTEGER";
+    case FLOAT:
+        return "FLOAT";
+    case CONST_CHAR:
+        return "CONST_CHAR";
+    case CONST_STR:
+        return "CONST_STR";
+    case PLUS:
+        return "+";
+    case MINUS:
+        return "-";
+    case MULT:
+        return "*";
+    case DIV:
+        return "/";
+    case AND:
+        return "&&";
+    case OR:
+        return "||";
+    case NOT:
+        return "!";
+    case ASSIGN:
+        return "=";
+    case COMMA:
+        return ",";
+    case EQUAL:
+        return "==";
+    case NOT_EQUAL:
+        return "!=";
+    case LT:
+        return "<";
+    case LE:
+        return "<=";
+    case GT:
+        return ">";
+    case GE:
+        return ">=";
+    case SEMICOLON:
+        return ";";
+    case OPEN_PARENTHESES:
+        return "(";
+    case CLOSE_PARENTHESES:
+        return ")";
+    case OPEN_BRACE:
+        return "{";
+    case CLOSE_BRACE:
+        return "}";
+    case OPEN_BRACKET:
+        return "[";
+    case CLOSE_BRACKET:
+        return "]";
+    case IF:
+        return "if";
+    case ELES:
+        return "else";
+    case WHILE:
+        return "while";
+    case FOR:
+        return "for";
+    case RETURN:
+        return "return";
+    case INT:
+        return "int";
+    case CHAR:
+        return "char";
+    case END_OF_FILE:
+        return "EOF";
+    case OTHER:
+        return "OTHER";
+    default:
+        return "DEFAULT"; //can't get there
+    }
+}
