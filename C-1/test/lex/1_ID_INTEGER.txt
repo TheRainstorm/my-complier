@@ -1,1 +1,47 @@
-length = (width + height)*2;
+"\x41\142\nc"
+
+//测试整数，浮点数识别
+99
+-17
+1.2e
+1.2e10
+12.34e+10;
+.12
+.12e3
+1.
+0123
+0x6F
+
+int triangle_area(int a, int b, int c){
+	int r, area;
+
+	r = (a+b+c)/2;
+	area = sqrt(r*(r-a)*(r-b)*(r-c));
+
+	return area;
+}
+
++
+math.sqrt()
+circle->area
+i++; i--;
++
+-
+*
+/
+%
++=
+-=
+*=
+/=
+%=
+=
+!=
+==
+< > <= >=
+
+!(h1 && h2 || h3)
+
+&x;
+
+x = (a>b)?a:b;

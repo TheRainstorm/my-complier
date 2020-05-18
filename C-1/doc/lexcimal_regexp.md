@@ -8,7 +8,7 @@ id = (letter|_)(letter|digit|_)*
 
 #### 1.1 关键字处理
 
-### 2 整常数
+### 2 整常数（有符号）
 
 #### 2.1 十进制
 
@@ -29,14 +29,14 @@ id = (letter|_)(letter|digit|_)*
 [+-]?0[xX][0-9a-fA-F]+
 ```
 
-### 3 浮点数常数
+### 3 浮点数常数（单精度）
 
 ```
 #EXP=[eE][+-]?NUM
-NUM.NUM(EXP)?
+
+NUM.[0-9]*(EXP)?
 NUM EXP
-NUM. (EXP)?
-.NUM (EXP)?
+.[0-9]+(EXP)?
 ```
 
 ### 4 字符串
@@ -57,5 +57,7 @@ NUM. (EXP)?
 
 ### 8 状态图
 
-![image-20200504234854195](lexcimal_regexp.assets/image-20200504234854195.png)
+
+
+
 
