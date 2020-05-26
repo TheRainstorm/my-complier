@@ -34,23 +34,23 @@ void display(ast_node *root, int indent){
 
     printf("%*s", indent, "");
     if(root->is_leaf == 'N'){
-        printf("%6s(%d)\n", root->name, root->lineno);
+        printf("%s(%d)\n", root->name, root->lineno);
     }else{
         // printf("%*shello world\n", indent, "");
         ast_leaf *r = (ast_leaf *)root;
         switch (r->leaf_type)
         {
         case ID:
-            printf("%6s: %s\n", "ID", r->type_id);
+            printf("%s: %s\n", "ID", r->type_id);
             break;
         case C_INT:
-            printf("%6s: %d\n", "Int", r->type_int);
+            printf("%s: %d\n", "Int", r->type_int);
             break;
         case C_FLOAT:
-            printf("%6s: %f\n", "Float", r->type_float);
+            printf("%s: %f\n", "Float", r->type_float);
             break;
         case C_CHAR:
-            printf("%6s: %c\n", "Char", r->type_char);
+            printf("%s: %c\n", "Char", r->type_char);
             break;
         default:
             break;
@@ -60,7 +60,7 @@ void display(ast_node *root, int indent){
     if(c!=NULL)
         display(c, indent+4);
     if(s!=NULL)
-        display(s, indent+4);
+        display(s, indent);
 }
 
 void ast_free(ast_node *root){

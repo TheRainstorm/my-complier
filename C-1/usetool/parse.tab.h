@@ -66,7 +66,8 @@ extern int yydebug;
      RETURN = 275,
      BOOL = 276,
      TRUE = 277,
-     FALSE = 278
+     FALSE = 278,
+     END_OF_FILE = 279
    };
 #endif
 
@@ -84,7 +85,7 @@ typedef union YYSTYPE
 
 
 /* Line 2058 of yacc.c  */
-#line 88 "parse.tab.h"
+#line 89 "parse.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

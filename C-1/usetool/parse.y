@@ -22,7 +22,7 @@ ast_node *root;
 %token <type_opassign> OP_ASSIGN
 %token S_PLUS S_MINUS '+' '-' '*' '/' '%' AND OR '!' ',' '='
 %token ';' '(' ')' '[' ']' '{' '}'
-%token INT FLOAT CHAR VOID IF ELSE WHILE RETURN BOOL TRUE FALSE
+%token INT FLOAT CHAR VOID IF ELSE WHILE RETURN BOOL TRUE FALSE END_OF_FILE
 
 // %type <type_p_ast_node> Program ExtDefList ExtDef VarDec FuncDef Specificer VarList Var ParamList CompSt Param
 // %type <type_p_ast_node> StmtList Stmt Exp RParamList RParam
@@ -57,34 +57,34 @@ Program:
 Stmt:
       Exp ';'                       {$$=create_node(yylineno, "Stmt-Exp", $1, NULL); }
     | ID '=' Exp ';'                {$1->sibling = $3; $$=create_node(yylineno, "Stmt-Assign", (ast_node *)$1, NULL); }
-    | ID OP_ASSIGN Exp ';'          {$1->sibling = $3; $$=create_node(yylineno, $2, (ast_node *)$1, NULL); }
-    | IF '(' Exp ')' Stmt           %prec IF {$3->sibling = $5; $$=create_node(yylineno, "if", $3, $5); }
+    | ID OP_ASSIGN Exp ';'          {$1->sibling = $3; char tmp[10]="Stmt-"; $$=create_node(yylineno, strcat(tmp, $2), (ast_node *)$1, NULL); }
+    | IF '(' Exp ')' Stmt           %prec IF {$3->sibling = $5; $$=create_node(yylineno, "Stmt-if", $3, $5); }
     | IF '(' Exp ')' Stmt ELSE Stmt %prec ELSE {
                                         $3->sibling = $5;
                                         $5->sibling = $7;
-                                        $$=create_node(yylineno, "if else", $3, NULL); 
+                                        $$=create_node(yylineno, "Stmt-if-else", $3, NULL); 
                                     }
-    | WHILE '(' Exp ')' Stmt        {$3->sibling = $5; $$=create_node(yylineno, "while", $3, NULL); }
+    | WHILE '(' Exp ')' Stmt        {$3->sibling = $5; $$=create_node(yylineno, "Stmt-while", $3, NULL); }
     | RETURN Exp ';'                {$$=create_node(yylineno, "Stmt-Return", $2, NULL); }
 ;
 
 Exp:
-      Exp '+' Exp   {$1->sibling = $3; $$=create_node(yylineno, "+", $1, NULL); }
-    | Exp '-' Exp   {$1->sibling = $3; $$=create_node(yylineno, "-", $1, NULL); }
-    | Exp '*' Exp   {$1->sibling = $3; $$=create_node(yylineno, "*", $1, NULL); }
-    | Exp '/' Exp   {$1->sibling = $3; $$=create_node(yylineno, "/", $1, NULL); }
-    | Exp '%' Exp   {$1->sibling = $3; $$=create_node(yylineno, "%", $1, NULL); }
-    | Exp REL_OP Exp{$1->sibling = $3; $$=create_node(yylineno, $2, $1, NULL); }
-    | S_PLUS Exp    {$$=create_node(yylineno, "left++", $2, NULL); }
-    | S_MINUS Exp   {$$=create_node(yylineno, "left--", $2, NULL); }
-    | Exp S_PLUS    {$$=create_node(yylineno, "right++", $1, NULL); }
-    | Exp S_MINUS   {$$=create_node(yylineno, "right--", $1, NULL); }
-    | Exp AND Exp   {$1->sibling = $3; $$=create_node(yylineno, "and", $1, NULL); }
-    | Exp OR Exp    {$1->sibling = $3; $$=create_node(yylineno, "or", $1, NULL); }
-    | '!' Exp       {$$=create_node(yylineno, "not", $2, NULL); }
-    | '-' Exp       %prec '!' {$$=create_node(yylineno, "neg", $2, NULL); }
-    | '(' Exp ')'   {$$=create_node(yylineno, "()", $2, NULL); }
-    | Exp ',' Exp   {$1->sibling = $3; $$=create_node(yylineno, "comma", $1, NULL); }
+      Exp '+' Exp   {$1->sibling = $3; $$=create_node(yylineno, "exp+", $1, NULL); }
+    | Exp '-' Exp   {$1->sibling = $3; $$=create_node(yylineno, "exp-", $1, NULL); }
+    | Exp '*' Exp   {$1->sibling = $3; $$=create_node(yylineno, "exp*", $1, NULL); }
+    | Exp '/' Exp   {$1->sibling = $3; $$=create_node(yylineno, "exp/", $1, NULL); }
+    | Exp '%' Exp   {$1->sibling = $3; $$=create_node(yylineno, "exp%", $1, NULL); }
+    | Exp REL_OP Exp{$1->sibling = $3; char tmp[10]="exp-"; $$=create_node(yylineno, strcat(tmp, $2), $1, NULL); }
+    | S_PLUS Exp    {$$=create_node(yylineno, "exp-left++", $2, NULL); }
+    | S_MINUS Exp   {$$=create_node(yylineno, "exp-left--", $2, NULL); }
+    | Exp S_PLUS    {$$=create_node(yylineno, "exp-right++", $1, NULL); }
+    | Exp S_MINUS   {$$=create_node(yylineno, "exp-right--", $1, NULL); }
+    | Exp AND Exp   {$1->sibling = $3; $$=create_node(yylineno, "exp-and", $1, NULL); }
+    | Exp OR Exp    {$1->sibling = $3; $$=create_node(yylineno, "exp-or", $1, NULL); }
+    | '!' Exp       {$$=create_node(yylineno, "exp-not", $2, NULL); }
+    | '-' Exp       %prec '!' {$$=create_node(yylineno, "exp-neg", $2, NULL); }
+    | '(' Exp ')'   {$$=create_node(yylineno, "exp-()", $2, NULL); }
+    | Exp ',' Exp   {$1->sibling = $3; $$=create_node(yylineno, "exp-comma", $1, NULL); }
     | ID            {$$=(ast_node *)$1; }
     | C_INT         {$$=(ast_node *)$1; }
     | C_FLOAT       {$$=(ast_node *)$1; }
