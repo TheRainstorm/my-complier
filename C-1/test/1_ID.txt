@@ -1,0 +1,10 @@
+int triangle_area(int a, int b, int c){
+	int r, area;
+
+	r = (a+b+c)/2;
+	area = sqrt(r*(r-a)*(r-b)*(r-c));
+
+	return area;
+}
+
+a_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_long_variable = 0;

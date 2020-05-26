@@ -1,16 +1,17 @@
 #ifndef DEFINE_H
 #define DEFINE_H
+#include <cstring>
 #include <string>
 
 /**Symbol
-0 ĞòºÅ -
-1 Ãû×Ö -
-2 ÀàĞÍ
-3 ´æ´¢µØÖ·
-4 Î¬Êı/²ÎÊı¸öÊı
-5 ÉùÃ÷ĞĞ
-6 ÒıÓÃĞĞ
-7 Ö¸Õë
+0 åºå· -
+1 åå­— -
+2 ç±»å‹
+3 å­˜å‚¨åœ°å€
+4 ç»´æ•°/å‚æ•°ä¸ªæ•°
+5 å£°æ˜è¡Œ
+6 å¼•ç”¨è¡Œ
+7 æŒ‡é’ˆ
 */
 typedef struct Symbol
 {
@@ -23,7 +24,7 @@ typedef unsigned int uint;
 uint my_hash(char* str);
 
 /**Token
-* ¼ÇºÅµÄ±àÂë±í
+* è®°å·çš„ç¼–ç è¡¨
 */
 enum Token_type{
     //Misc

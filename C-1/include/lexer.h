@@ -1,44 +1,38 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#define DEBUG
-
 #include "define.h"
 
 using namespace std;
 
-#ifdef DEBUG
-#define BUF_SIZE 40
-#else
 #define BUF_SIZE 2048
-#endif
 
 #define MAX_LENGTH_ID 128
 #define MAX_LENGTH_STR 1024
-#define KEYWORD_HASH_SIZE 199 //ËØÊı
+#define KEYWORD_HASH_SIZE 199 //ç´ æ•°
 class Lexer {
 private:
-    char buf_left[BUF_SIZE], buf_right[BUF_SIZE]; //ÊäÈë»º³åÇø
-    char* s_ptr, * f_ptr; //Ê¶±ğ¼ÇºÅµÄ¿ªÊ¼Ö¸ÕëºÍÇ°½øÖ¸Õë
+    char buf_left[BUF_SIZE], buf_right[BUF_SIZE]; //è¾“å…¥ç¼“å†²åŒº
+    char* s_ptr, * f_ptr; //è¯†åˆ«è®°å·çš„å¼€å§‹æŒ‡é’ˆå’Œå‰è¿›æŒ‡é’ˆ
 public:
-    char m_file_name[100]; //µ±Ç°ÎÄ¼şÂ·¾¶
-    FILE* m_fp; //µ±Ç°ÎÄ¼şÖ¸Õë
-    int m_cur_line, m_cur_col; //µ±Ç°µÄĞĞºÍÁĞºÅ
+    char m_file_name[100]; //å½“å‰æ–‡ä»¶è·¯å¾„
+    FILE* m_fp; //å½“å‰æ–‡ä»¶æŒ‡é’ˆ
+    int m_cur_line, m_cur_col; //å½“å‰çš„è¡Œå’Œåˆ—å·
 
-    int m_nchar, m_nword; //Ô´ÎÄ¼şµÄ×Ö·ûÊı£¨EOF»á¶àÒ»¸ö×Ö·û£©£¬µ¥´ÊÊı£¨±êÊ¶·ûºÍ¹Ø¼ü×Ö£©
+    int m_nchar, m_nword; //æºæ–‡ä»¶çš„å­—ç¬¦æ•°ï¼ˆEOFä¼šå¤šä¸€ä¸ªå­—ç¬¦ï¼‰ï¼Œå•è¯æ•°ï¼ˆæ ‡è¯†ç¬¦å’Œå…³é”®å­—ï¼‰
 
-    char m_token_str[MAX_LENGTH_STR]; //´æ·ÅÊ¶±ğ³öµÄ¼ÇºÅµÄ×Ö·û´®£¬¿ÉÓÃÓÚ×ª»»ÕûÊıµÈµÈ¡£
+    char m_token_str[MAX_LENGTH_STR]; //å­˜æ”¾è¯†åˆ«å‡ºçš„è®°å·çš„å­—ç¬¦ä¸²ï¼Œå¯ç”¨äºè½¬æ¢æ•´æ•°ç­‰ç­‰ã€‚
 
-    char m_keyword_hash_table[KEYWORD_HASH_SIZE][9]; //ÓÃÓÚ¿ìËÙÅĞ¶ÏÒ»¸ö±êÊ¶·ûÊÇ·ñÎª¹Ø¼ü×Ö¡£¹Ø¼ü×Ö×î³¤Îª8×Ö·û
-    char  m_keyword_id_hash_table[KEYWORD_HASH_SIZE]; //ÓÃÓÚ»ñµÃÒ»¸ö¹Ø¼ü×ÖµÄToken_type±àºÅ
+    char m_keyword_hash_table[KEYWORD_HASH_SIZE][9]; //ç”¨äºå¿«é€Ÿåˆ¤æ–­ä¸€ä¸ªæ ‡è¯†ç¬¦æ˜¯å¦ä¸ºå…³é”®å­—ã€‚å…³é”®å­—æœ€é•¿ä¸º8å­—ç¬¦
+    char  m_keyword_id_hash_table[KEYWORD_HASH_SIZE]; //ç”¨äºè·å¾—ä¸€ä¸ªå…³é”®å­—çš„Token_typeç¼–å·
 public:
     Lexer();
     ~Lexer();
     void set_file(const char* file_path);
     Token* next_token();
-    void forward(); //f_ptrÏòÇ°ÒÆ¶¯Ò»¸ö×Ö·û
-    bool get_token_str(char* buf, int size); //½«s_ptrºÍf_ptrÖ®¼äµÄ×Ö·û´®Ğ´Èëbuf, sizeÎªbufµÄ´óĞ¡£¬µ±×Ö·û´®¹ı³¤Ê±£¬»á±»½ØÈ¡³Ésize-1µÄ³¤¶È£¬ÒÔ\0½áÎ²
+    void forward(); //f_ptrå‘å‰ç§»åŠ¨ä¸€ä¸ªå­—ç¬¦
+    bool get_token_str(char* buf, int size); //å°†s_ptrå’Œf_pträ¹‹é—´çš„å­—ç¬¦ä¸²å†™å…¥buf, sizeä¸ºbufçš„å¤§å°ï¼Œå½“å­—ç¬¦ä¸²è¿‡é•¿æ—¶ï¼Œä¼šè¢«æˆªå–æˆsize-1çš„é•¿åº¦ï¼Œä»¥\0ç»“å°¾
     int is_keyword(char* str);
 };
 
-#endif;
+#endif

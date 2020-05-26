@@ -1,0 +1,7 @@
+s1 = "hello wold"
+s2 = "a\nb\tc"
+s3 = "\141\x62\X63" //abc
+a = "";
+
+s4 = "\148\x2g"
+s5 = "a \m b\n"

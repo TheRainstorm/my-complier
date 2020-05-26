@@ -1,7 +1,7 @@
 #include "define.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <string>
 
 std::string Debug_token_type_to_str(Token_type type) {
@@ -88,11 +88,11 @@ uint my_hash(char* str) {
 
 char* my_strncpy_s(char* to, int buf_size, char* from, int max_cpy) {
     /*
-    ´ÓfromÖÐ¸´ÖÆ×î¶àmax_cpy¸ö×Ö·ûµ½toÖÐ£¬ÇÒ±£Ö¤to²»»áÒç³ö£¨ÆäÖÐbuf_sizeÎªto»º³åÇøµÄ´óÐ¡£©£¬ÇÒto×Ö·û´®ÒÔ\0½áÎ²¡£
+    ä»Žfromä¸­å¤åˆ¶æœ€å¤šmax_cpyä¸ªå­—ç¬¦åˆ°toä¸­ï¼Œä¸”ä¿è¯toä¸ä¼šæº¢å‡ºï¼ˆå…¶ä¸­buf_sizeä¸ºtoç¼“å†²åŒºçš„å¤§å°ï¼‰ï¼Œä¸”toå­—ç¬¦ä¸²ä»¥\0ç»“å°¾ã€‚
     */
     char* tmp = to;
 
-    buf_size = buf_size - 1; //³ýÈ¥\0Õ¼ÓÃµÄÒ»¸ö×Ö·û
+    buf_size = buf_size - 1; //é™¤åŽ»\0å ç”¨çš„ä¸€ä¸ªå­—ç¬¦
     while (buf_size && max_cpy && (*to++ = *from++)) {
         buf_size--;
         max_cpy--;
@@ -105,9 +105,9 @@ char* my_strncpy_s(char* to, int buf_size, char* from, int max_cpy) {
 
 char* my_strncat_s(char* to, int buf_size, char* from, int max_cat) {
     /*
-    ´Ófrom¸´ÖÆ×î¶àmax_cat¸ö×Ö·ûµ½to×Ö·û´®µÄ½áÎ²£¬ÇÒ±£Ö¤to²»»áÒç³ö£¨ÆäÖÐbuf_sizeÎªto»º³åÇøµÄ´óÐ¡£©£¬ÇÒto×Ö·û´®ÒÔ\0½áÎ²¡£
+    ä»Žfromå¤åˆ¶æœ€å¤šmax_catä¸ªå­—ç¬¦åˆ°toå­—ç¬¦ä¸²çš„ç»“å°¾ï¼Œä¸”ä¿è¯toä¸ä¼šæº¢å‡ºï¼ˆå…¶ä¸­buf_sizeä¸ºtoç¼“å†²åŒºçš„å¤§å°ï¼‰ï¼Œä¸”toå­—ç¬¦ä¸²ä»¥\0ç»“å°¾ã€‚
 
-    to×Ö·û´®±ØÐëÒÔ\0½áÎ²£¬·ñÔòµÃµ½µÄÎªto±¾Éí
+    toå­—ç¬¦ä¸²å¿…é¡»ä»¥\0ç»“å°¾ï¼Œå¦åˆ™å¾—åˆ°çš„ä¸ºtoæœ¬èº«
     */
     char* tmp = to;
 
@@ -115,7 +115,7 @@ char* my_strncat_s(char* to, int buf_size, char* from, int max_cat) {
         to++;
         buf_size--;
     }
-    //Ñ­»·½áÊøÊ±£¬buf_sizeÎªtoÖÐÊ£ÓàµÄ»º³åÇø´óÐ¡£¨°üº¬\0£©
+    //å¾ªçŽ¯ç»“æŸæ—¶ï¼Œbuf_sizeä¸ºtoä¸­å‰©ä½™çš„ç¼“å†²åŒºå¤§å°ï¼ˆåŒ…å«\0ï¼‰
 
     if (buf_size - 1 > 0)
         my_strncpy_s(to, buf_size, from, max_cat);
