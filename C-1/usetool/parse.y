@@ -27,7 +27,7 @@ ast_node *root;
 // %type <type_p_ast_node> Program ExtDefList ExtDef VarDec FuncDef Specificer VarList Var ParamList CompSt Param
 // %type <type_p_ast_node> StmtList Stmt Exp RParamList RParam
 
-%type <type_p_ast_node> Program Stmt Exp
+%type <type_p_ast_node> Program CompSt StmtList Stmt Exp
 
 %nonassoc IF
 %nonassoc ELSE
@@ -54,6 +54,15 @@ Program:
         }
 ;
 
+//复合语句 | 语句块
+CompSt:
+    '{' StmtList '}'                {$$=create_node(yylineno, "CompSt", $2, NULL);  }
+;
+
+StmtList:                           {$$=NULL; }
+    | Stmt StmtList                     {$1->sibling = $2; $$=$1; }
+;
+
 Stmt:
       Exp ';'                       {$$=create_node(yylineno, "Stmt-Exp", $1, NULL); }
     | ID '=' Exp ';'                {$1->sibling = $3; $$=create_node(yylineno, "Stmt-Assign", (ast_node *)$1, NULL); }
@@ -66,6 +75,7 @@ Stmt:
                                     }
     | WHILE '(' Exp ')' Stmt        {$3->sibling = $5; $$=create_node(yylineno, "Stmt-while", $3, NULL); }
     | RETURN Exp ';'                {$$=create_node(yylineno, "Stmt-Return", $2, NULL); }
+    | CompSt                        
 ;
 
 Exp:
