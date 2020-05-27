@@ -52,6 +52,24 @@ void display(ast_node *root, int indent){
         case C_CHAR:
             printf("%s: %c\n", "Char", r->type_char);
             break;
+        case INT:
+            printf("%s: %s\n", "Type", "int");
+            break;
+        case FLOAT:
+            printf("%s: %s\n", "Type", "float");
+            break;
+        case CHAR:
+            printf("%s: %s\n", "Type", "char");
+            break;
+        case BOOL:
+            printf("%s: %s\n", "Type", "bool");
+            break;
+        case TRUE:
+            printf("%s: %s\n", "Bool", "ture");
+            break;
+        case FALSE:
+            printf("%s: %s\n", "Bool", "false");
+            break;
         default:
             break;
         }

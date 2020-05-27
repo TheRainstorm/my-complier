@@ -77,17 +77,17 @@ R_C_CHAR    (\'([^'\\]|\\['"\\abfnrtv]|\\[0-7]{1,3}|\\[xX][0-9a-fA-F]{1,2})\')
 "{"                 {return yytext[0]; }
 "}"                 {return yytext[0]; }
  /*关键字*/
-"int"               {return INT; }
-"float"             {return FLOAT; }
-"char"              {return CHAR; }
-"void"              {return VOID; }
+"int"               {yylval.type_p_ast_leaf = create_leaf(yylineno, INT, NULL, NULL); return INT; }
+"float"             {yylval.type_p_ast_leaf = create_leaf(yylineno, FLOAT, NULL, NULL); return FLOAT; }
+"char"              {yylval.type_p_ast_leaf = create_leaf(yylineno, CHAR, NULL, NULL); return CHAR; }
+"void"              {yylval.type_p_ast_leaf = create_leaf(yylineno, VOID, NULL, NULL); return VOID; }
 "if"                {return IF; }
 "else"              {return ELSE; }
 "while"             {return WHILE; }
 "return"            {return RETURN; }
-"bool"              {return BOOL; }
-"true"              {return TRUE; }
-"false"             {return FALSE; }
+"bool"              {yylval.type_p_ast_leaf = create_leaf(yylineno, BOOL, NULL, NULL); return BOOL; }
+"true"              {yylval.type_p_ast_leaf = create_leaf(yylineno, TRUE, NULL, NULL); return TRUE; }
+"false"             {yylval.type_p_ast_leaf = create_leaf(yylineno, FALSE, NULL, NULL); return FALSE; }
  /*杂项*/
 {R_ID}              {
                         yylval.type_p_ast_leaf = create_leaf(yylineno, ID, NULL, NULL);
