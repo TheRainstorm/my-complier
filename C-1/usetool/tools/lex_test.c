@@ -11,7 +11,7 @@ extern int yylex (void);
 extern FILE *yyin;
 extern int yylineno;
 extern char *yytext;
-extern char g_file_name[FILE_NAME_MAX_LENGTH];
+char g_file_name[FILE_NAME_MAX_LENGTH];
 
 
 int main(int argc, char **argv){

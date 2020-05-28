@@ -12,14 +12,15 @@
 #include "parse.tab.h"
 
 void yyerror(char *s, ...);
+// yylval为flex和biosn公用的全局变量，用于从flex向bison传递数据
 YYSTYPE yylval;
+//在每次记号对应的操作前被调用，并且更新yylloc的信息
+YYLTYPE yylloc;
+#define YY_USER_ACTION    	yylloc.first_line=yylloc.last_line=yylineno;
 
 int str_octal_to_int(char *);
 int str_hexa_to_int(char *);
 char str_to_char(char *);
-
-#define FILE_NAME_MAX_LENGTH 20
-char g_file_name[FILE_NAME_MAX_LENGTH];
 %}
 
 R_ID        ([_a-zA-Z][_0-9a-zA-Z]*)
@@ -40,28 +41,28 @@ R_C_CHAR    (\'([^'\\]|\\['"\\abfnrtv]|\\[0-7]{1,3}|\\[xX][0-9a-fA-F]{1,2})\')
 <COMMENT><<EOF>>    {yyerror("Comment are not close!");}
 "*/"                {yyerror("没匹配到开始注释!");}
  /*运算符*/
- /*"."                 {return yytext[0]; }
-"->"                {return R_ARROW; }*/
+"."                 {return yytext[0]; }
+ /*"->"                {return R_ARROW; }*/
  /**/
 "++"                {return S_PLUS; }
 "--"                {return S_MINUS; }
  /**/
-"=="                {strncpy(yylval.type_relop, yytext, 3); return REL_OP; }
-"!="                {strncpy(yylval.type_relop, yytext, 3); return REL_OP; }
-"<="                {strncpy(yylval.type_relop, yytext, 3); return REL_OP; }
-"<"                 {strncpy(yylval.type_relop, yytext, 3); return REL_OP; }
-">="                {strncpy(yylval.type_relop, yytext, 3); return REL_OP; }
-">"                 {strncpy(yylval.type_relop, yytext, 3); return REL_OP; }
+"=="                {yylval.type=NT_REL_OP1; return REL_OP; }
+"!="                {yylval.type=NT_REL_OP2; return REL_OP; }
+"<="                {yylval.type=NT_REL_OP3; return REL_OP; }
+"<"                 {yylval.type=NT_REL_OP4; return REL_OP; }
+">="                {yylval.type=NT_REL_OP5; return REL_OP; }
+">"                 {yylval.type=NT_REL_OP6; return REL_OP; }
  /**/
 "&&"                {return AND; }
 "||"                {return OR; }
 "!"                 {return yytext[0]; }
  /**/
 "="                 {return yytext[0]; }
-"+="                {strncpy(yylval.type_opassign, yytext, 3); return OP_ASSIGN; }
-"-="                {strncpy(yylval.type_opassign, yytext, 3); return OP_ASSIGN; }
-"*="                {strncpy(yylval.type_opassign, yytext, 3); return OP_ASSIGN; }
-"/="                {strncpy(yylval.type_opassign, yytext, 3); return OP_ASSIGN; }
+"+="                {yylval.type=NT_STMT_OP_ASSIGN1; return OP_ASSIGN; }
+"-="                {yylval.type=NT_STMT_OP_ASSIGN2; return OP_ASSIGN; }
+"*="                {yylval.type=NT_STMT_OP_ASSIGN3; return OP_ASSIGN; }
+"/="                {yylval.type=NT_STMT_OP_ASSIGN4; return OP_ASSIGN; }
  /**/
 ","                 {return yytext[0]; }
  /**/
@@ -74,6 +75,8 @@ R_C_CHAR    (\'([^'\\]|\\['"\\abfnrtv]|\\[0-7]{1,3}|\\[xX][0-9a-fA-F]{1,2})\')
 ";"                 {return yytext[0]; }
 "("                 {return yytext[0]; }
 ")"                 {return yytext[0]; }
+"["                 {return yytext[0]; }
+"]"                 {return yytext[0]; }
 "{"                 {return yytext[0]; }
 "}"                 {return yytext[0]; }
  /*关键字*/
@@ -88,6 +91,7 @@ R_C_CHAR    (\'([^'\\]|\\['"\\abfnrtv]|\\[0-7]{1,3}|\\[xX][0-9a-fA-F]{1,2})\')
 "bool"              {yylval.type_p_ast_leaf = create_leaf(yylineno, BOOL, NULL, NULL); return BOOL; }
 "true"              {yylval.type_p_ast_leaf = create_leaf(yylineno, TRUE, NULL, NULL); return TRUE; }
 "false"             {yylval.type_p_ast_leaf = create_leaf(yylineno, FALSE, NULL, NULL); return FALSE; }
+"struct"            {return STRUCT; }
  /*杂项*/
 {R_ID}              {
                         yylval.type_p_ast_leaf = create_leaf(yylineno, ID, NULL, NULL);
@@ -131,7 +135,7 @@ void yyerror(char *s, ...){
     va_list ap;
     va_start(ap, s);
 
-    fprintf(stderr, "%s:%-4d error, ", g_file_name, yylineno);
+    fprintf(stderr, "%4d: Error, ", yylineno);
     vfprintf(stderr, s, ap);
     fprintf(stderr, "\n");
 }

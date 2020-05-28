@@ -1,21 +1,52 @@
-#my_gcc.exe < sample.c >output 2>&1
 
-my_gcc:
-	bison -dv parse.y
-	flex lex.l
-	gcc -o $@ lex.yy.c parse.tab.c ast_node.c
+WORKDIR = .
+RESDIR = $(WORKDIR)/resource
+
+SrcFiles=$(wildcard $(WORKDIR)/src/*.c)
+ObjFiles=$(patsubst %.c, %.o, $(SrcFiles))
+
+CC = gcc
+INCLUDES = -I./include
+CFLAGS = $(INCLUDES)
+
+my_gcc: $(WORKDIR)/src/parse.tab.o $(WORKDIR)/src/lex.yy.o $(ObjFiles)
+	$(CC) $(CFLAGS) -o $@ $^
+
+all:
+	make bison
+	make flex
+	$(CC) $(CFLAGS) -o my_gcc $(SrcFiles)
+
+$(WORKDIR)/src/parse.tab.o: $(RESDIR)/parse.y
+	bison -dv $(RESDIR)/parse.y
+	mv $(WORKDIR)/parse.tab.h $(WORKDIR)/include
+	mv $(WORKDIR)/parse.tab.c $(WORKDIR)/src
+	mv $(WORKDIR)/parse.output $(WORKDIR)/tmp
+	
+	$(CC) $(CFLAGS) -c -o $@ $(WORKDIR)/src/parse.tab.c
+
+$(WORKDIR)/src/lex.yy.o: $(RESDIR)/lex.l $(WORKDIR)/include/parse.tab.h
+	flex $(RESDIR)/lex.l
+	mv $(WORKDIR)/lex.yy.c $(WORKDIR)/src
+	$(CC) $(CFLAGS) -c -o $@ $(WORKDIR)/src/lex.yy.c
+
+flex: $(RESDIR)/lex.l
+	flex $(RESDIR)/lex.l
+	mv $(WORKDIR)/lex.yy.c $(WORKDIR)/src
+
+bison: $(RESDIR)/parse.y
+	bison -dv $^
+	mv $(WORKDIR)/parse.tab.h $(WORKDIR)/include
+	mv $(WORKDIR)/parse.tab.c $(WORKDIR)/src
+	mv $(WORKDIR)/parse.output $(WORKDIR)/tmp
+
 lex_test:
-	bison -dv parse.y
-	flex lex.l
-	gcc -o $@ lex.yy.c lex_test.c ast_node.c
-# old:
-# 	gcc lex.yy.c
-# 	./a.exe ../test/1_ID.txt > 1_ID.txt.out
-# 	./a.exe ../test/2_float.txt > 2_float.txt.out
-# 	./a.exe ../test/3_operator.txt > 3_operator.txt.out
-# 	./a.exe ../test/4_char.txt > 4_char.txt.out
+	make flex
+	$(CC) $(CFLAGS) -o $@ $(WORKDIR)/src/lex.yy.c $(WORKDIR)/src/ast_node.c $(WORKDIR)/tools/lex_test.c 
 
 clean:
 	rm *.exe
-	rm parse.output
-	rm lex.yy.c parse.tab.c
+	rm $(ObjFiles)
+
+run:
+	./my_gcc.exe sample2.c >./tmp/output

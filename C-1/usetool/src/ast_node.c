@@ -7,7 +7,7 @@
 ast_node *create_node(int lineno, char *name, ast_node *child, ast_node *sibling){
     ast_node *n = (ast_node *)malloc(sizeof(ast_node));
 
-    n->is_leaf = 'N';
+    n->is_leaf = 0;
     n->lineno = lineno;
     n->child = child;
     n->sibling = sibling;
@@ -15,10 +15,24 @@ ast_node *create_node(int lineno, char *name, ast_node *child, ast_node *sibling
     strncpy(n->name, name, AST_NODE_NAME_MAX_LENGTH);
     return n;
 }
+
+ast_node *create_node2(int lineno, int node_type, char *name, ast_node *child, ast_node *sibling){
+    ast_node *n = (ast_node *)malloc(sizeof(ast_node));
+
+    n->is_leaf = 0;
+    n->lineno = lineno;
+    n->child = child;
+    n->sibling = sibling;
+
+    n->node_type = node_type;
+    strncpy(n->name, name, AST_NODE_NAME_MAX_LENGTH);
+    return n;
+}
+
 ast_leaf *create_leaf(int lineno, int leaf_type, ast_node *child, ast_node *sibling){
     ast_leaf *n = (ast_leaf *)malloc(sizeof(ast_leaf));
 
-    n->is_leaf='Y';
+    n->is_leaf=1;
     n->lineno = lineno;
     n->child = child;
     n->sibling = sibling;
@@ -33,7 +47,7 @@ void display(ast_node *root, int indent){
     s = root->sibling;
 
     printf("%*s", indent, "");
-    if(root->is_leaf == 'N'){
+    if(root->is_leaf == 0){
         printf("%s(%d)\n", root->name, root->lineno);
     }else{
         // printf("%*shello world\n", indent, "");
@@ -63,6 +77,9 @@ void display(ast_node *root, int indent){
             break;
         case BOOL:
             printf("%s: %s\n", "Type", "bool");
+            break;
+        case VOID:
+            printf("%s: %s\n", "Type", "void");
             break;
         case TRUE:
             printf("%s: %s\n", "Bool", "ture");

@@ -11,6 +11,13 @@
 
 int g_var1 = 0;
 
+int a, b[10], c[10][2];
+struct tag
+{
+    int a;
+    char b;
+} stag;
+
 int main(int argc, char argv){ //暂时无法识别char *argv[]
     char a, b, c=0;
     float x=0.12, y=0.36;
@@ -23,7 +30,7 @@ int main(int argc, char argv){ //暂时无法识别char *argv[]
 
     }
 
-    while(flag){
+    while(flag == true){
         int tmp;
 
         a++;
