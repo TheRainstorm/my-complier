@@ -3,9 +3,10 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "ast_node.h"
 #include "parse.tab.h" //含yyparse()声明
+#include "ast_node.h"
 #include "symbol_table.h"
+#include "tac.h"
 #include "define.h"
 
 /**----------------EXTERN start---------------*/
@@ -25,6 +26,7 @@ SYMBOL_TABLE ST;
 BLOCK_INDEX_TABLE BIT;
 uint symbol_hash_table[SYMBOL_TABLE_MAX_SIZE];
 
+code_node *TAC; //三地址码
 /**----------------全局变量end-----------------*/
 
 
@@ -50,7 +52,11 @@ int main(int argc, char *argv[]){
 
     /*----------------------语义分析 start------------------------*/
     ST.top = BIT.top = 0;   //初始化符号表，块索引表
+    location();
+    print_symbol_table();
+    print_block_index_table();
     semantic_analysis(root);
+    relocation();
     /*----------------------语义分析 end--------------------------*/
 
 

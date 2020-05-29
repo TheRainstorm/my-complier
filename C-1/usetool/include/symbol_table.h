@@ -12,8 +12,11 @@ typedef struct symbol //符号表的一行
 
     int type;                   //变量类型或函数返回类型 int: 0, float: 1
     int dimen;                  //数组维数或函数参数个数
-    int level;                  //层数，全局变量和函数名为0，每进入一个块加1，函数形参为1
+    // int level;                  //层数，全局变量和函数名为0，每进入一个块加1，函数形参为1
     
+    char flag;                  //'V':变量 'F':函数 'T':临时变量
+    int offset;                 //偏移
+    int width;                  //字节数
     uint chain_next;            //符号散列表冲突时，用于指向之前的符号表项。
     //...
 }symbol;

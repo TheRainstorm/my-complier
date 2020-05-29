@@ -2,7 +2,9 @@
 #define AST_NODE_H_INCLUDE
 #define AST_NODE_NAME_MAX_LENGTH 8
 #include "define.h"
+#include "tac.h"
 
+//ast树非终结符节点的类型
 enum node_type {
     //Exp
     NT_PLUS,
@@ -62,6 +64,11 @@ typedef struct ast_node
     struct ast_node *child, *sibling;
     int node_type;
     char name[AST_NODE_NAME_MAX_LENGTH];    //节点名称，如Exp+Exp可产生一个名为"+"的内部节点
+
+    code_node *code;                        //当前节点指向的中间代码节点
+    // int index;                              //Exp使用，存储生成的临时变量在符号表中的位置
+    // int type;                               //Exp使用，存储表达式的类型
+
 }ast_node;
 
 typedef struct ast_leaf
@@ -78,6 +85,8 @@ typedef struct ast_leaf
         float type_float;
         char type_id[ID_MAX_LENGTH];
     };
+
+    code_node *code;
 }ast_leaf;
 
 ast_node *create_node2(int lineno, int node_type, char *name, ast_node *child, ast_node *sibling);
