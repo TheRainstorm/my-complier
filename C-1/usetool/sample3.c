@@ -3,8 +3,9 @@ int foo(int a, int b) {
 }
 
 int main() {
-    int a, b;
-    a = 1 + ((a + b) + 0.12) * 3;
+    int a, b = 0;
+
+    a = 1 + ((a + b) + 2) * 3;
     foo(a, foo(1 + 2, b));
 
     if(a < b){

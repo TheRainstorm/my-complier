@@ -104,23 +104,23 @@ int analysis_exp(ast_node *exp, operand *p_result){
                     exp->node_type==NT_DIV? OP_DIV: -1, opn1, opn2, *p_result);
                 
                 exp->code = merge(merge(exp->child->code, exp->child->sibling->code), code);
-                break;
+                return type1;
             case NT_COMMA:
                 analysis_exp(exp->child, &opn1);
-                analysis_exp(exp->child->sibling, p_result);    //右侧的作为结果
+                type2 = analysis_exp(exp->child->sibling, p_result);    //右侧的作为结果
                 exp->code = merge(exp->child->code, exp->child->sibling->code);
-                break;
+                return type2;
             case NT_PARENTHESIS:
-                analysis_exp(exp->child, p_result); //p_result由子exp确定
+                type1 = analysis_exp(exp->child, p_result); //p_result由子exp确定
                 exp->code = exp->child->code;       //code直接传递
-                break;
+                return type1;
             case NT_RPARAM:
-                analysis_exp(exp->child, p_result);
+                type1 = analysis_exp(exp->child, p_result);
                 exp->code = exp->child->code;
-                break;
+                return type1;
             case NT_FUNC_CALL:
-                analysis_func_call(exp, p_result);
-                break;
+                type1 = analysis_func_call(exp, p_result);
+                return type1;
             //以下的皆未处理
             case NT_MOD  :
             case NT_REL_OP1:
@@ -197,7 +197,8 @@ void analysis_var_dec(ast_node *var_dec){
     ast_node *c = var_dec->child;
     ast_node *n;
     ast_leaf *t;
-    operand opn;
+    operand opn, result;
+    var_dec->code=NULL;
 
     type = analysis_specifier(c);
     //遍历VarList
@@ -206,8 +207,12 @@ void analysis_var_dec(ast_node *var_dec){
         if(n->is_leaf){ //Var -> ID
             linear_insert_symbol_table(((ast_leaf *)n)->type_id, type, 0);
         }else if(n->node_type==NT_VAR_ASSIGN){ //Var -> ID=Exp
+
             analysis_exp(n->child->sibling, &opn);
             linear_insert_symbol_table(((ast_leaf *)(n->child))->type_id, type, 0);
+
+            result.opn_type=OPN_VAR; strcpy(result.id, ((ast_leaf *)(n->child))->type_id);
+            var_dec->code = merge(n->child->sibling->code, genIR_p(OP_ASSIGN_, &opn, NULL, &result));
         }else{
             /*Var[]*/
         }
@@ -436,27 +441,6 @@ void analysis_func_def(ast_node *func_def){
 }
 
 void semantic_analysis(ast_node *root){
-    // if(root){
-    //     root->code =NULL;
-    //     switch (root->node_type)
-    //         {
-    //         case NT_PROGRAM:
-    //             semantic_analysis(root->child);
-    //             break;
-    //         case NT_VAR_DEC:
-    //             analysis_var_dec(root);
-    //             break;
-    //         case NT_FUNC_DEF:
-    //             analysis_func_def(root);
-    //             break;
-    //         default:
-    //             printf("-1\n");
-    //             break;
-    //         }
-    //     semantic_analysis(root->sibling);
-    //     if(root->sibling)
-    //         root->code = merge(root->code, root->sibling->code);
-    // }
     ast_node *n;
     root->code = NULL;
     if(root){
@@ -466,6 +450,7 @@ void semantic_analysis(ast_node *root){
             {
             case NT_VAR_DEC:
                 analysis_var_dec(n);
+                root->code = merge(root->code, n->code);
                 break;
             case NT_FUNC_DEF:
                 analysis_func_def(n);
