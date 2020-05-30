@@ -390,6 +390,11 @@ void analysis_stmt(ast_node *stmt){
 int analysis_func_header(ast_node *func_header){
     ast_node *c = func_header->child;   //ID
 
+    operand result;
+    //FUNCTION F
+    result.opn_type=OPN_FUNC; strcpy(result.id, ((ast_leaf *)c)->type_id);
+    func_header->code = genIR_p(OP_FUNCTION, NULL, NULL, &result);
+
     ast_node *n, *n2;
     int dimen = 0;
     int param_type;
@@ -400,6 +405,10 @@ int analysis_func_header(ast_node *func_header){
         n2 = n->child; //Param -> Specifier ID
         param_type = analysis_specifier(n2);
         linear_insert_symbol_table(((ast_leaf *)(n2->sibling))->type_id, param_type, 0);
+
+        //PARAM
+        result.opn_type=OPN_VAR; strcpy(result.id, ((ast_leaf *)(n2->sibling))->type_id);
+        func_header->code = merge(func_header->code, genIR_p(OP_PARAM, NULL, NULL, &result));
 
         n = n->sibling;
     }
@@ -423,7 +432,7 @@ void analysis_func_def(ast_node *func_def){
 
     linear_insert_symbol_table(((ast_leaf *)(c->sibling->child))->type_id, type, dimen);    //header->child -> ID
 
-    func_def->code = c->sibling->sibling->code; //comp_st
+    func_def->code = merge(c->sibling->code, c->sibling->sibling->code);
 }
 
 void semantic_analysis(ast_node *root){

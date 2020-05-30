@@ -1,4 +1,4 @@
-Program(31)
+Program(28)
     FuncDef(3)
         Type: int
         Header(1)
@@ -10,42 +10,91 @@ Program(31)
                 Type: int
                 ID: b
         CompSt(3)
-    FuncDef(31)
+    FuncDef(28)
         Type: int
         Header(5)
             ID: main
-        CompSt(31)
+        CompSt(28)
             VarDec(6)
                 Type: int
                 ID: a
                 ID: b
-            Stmt=(22)
+            Stmt=(7)
+                ID: a
+                exp+(7)
+                    Int: 1
+                    exp*(7)
+                        exp()(7)
+                            exp+(7)
+                                exp()(7)
+                                    exp+(7)
+                                        ID: a
+                                        ID: b
+                                Float: 0.120000
+                        Int: 3
+            StmtExp(8)
+                expCall(8)
+                    ID: foo
+                    RParam(8)
+                        ID: a
+                    RParam(8)
+                        expCall(8)
+                            ID: foo
+                            RParam(8)
+                                exp+(8)
+                                    Int: 1
+                                    Int: 2
+                            RParam(8)
+                                ID: b
+            if-else(17)
+                relop(10)
+                    ID: a
+                    ID: b
+                CompSt(12)
+                    Stmt=(11)
+                        ID: a
+                        Int: 0
+                CompSt(17)
+                    Stmt=(13)
+                        ID: b
+                        Int: 0
+                    if(17)
+                        relop(14)
+                            ID: a
+                            ID: b
+                        CompSt(16)
+                            Stmt=(15)
+                                ID: a
+                                exp*(15)
+                                    Int: 2
+                                    ID: b
+            Stmt=(19)
                 ID: a
                 Int: 100
-            while(30)
-                relop(23)
+            while(27)
+                relop(20)
                     ID: a
                     Int: 0
-                CompSt(30)
-                    Stmt=(24)
+                CompSt(27)
+                    Stmt=(21)
                         ID: b
-                        exp%(24)
+                        exp%(21)
                             ID: a
                             Int: 2
-                    if-else(29)
-                        relop(25)
+                    if-else(26)
+                        relop(22)
                             ID: b
                             Int: 0
-                        CompSt(27)
-                            Stmt=(26)
+                        CompSt(24)
+                            Stmt=(23)
                                 ID: a
-                                exp-(26)
+                                exp-(23)
                                     ID: a
                                     Int: 1
-                        CompSt(29)
-                            Stmt=(28)
+                        CompSt(26)
+                            Stmt=(25)
                                 ID: a
-                                exp/(28)
+                                exp/(25)
                                     ID: a
                                     Int: 2
 -------------------------------------------------
@@ -72,6 +121,12 @@ Program(31)
 -------------------------------------------------
    Num   Name   Type  Dimen  Chain
 -------------------------------------------------
+     9     t7    int      0
+     8     t6    int      0
+     7     t5    int      0
+     6     t4    int      0
+     5     t3     -1      0
+     4     t2     -1      0
      3     t1    int      0
      2      b    int      0
      1      a    int      0
@@ -80,15 +135,21 @@ Program(31)
 --------------------------
    Num  Index
 --------------------------
-     3      3
-     2      3
+     2     10
      1      1
      0      0
 --------------------------
 -------------------------------------------------
    Num   Name   Type  Dimen  Chain
 -------------------------------------------------
-     3     t2    int      0
+    10     t8    int      0
+     9     t7    int      0
+     8     t6    int      0
+     7     t5    int      0
+     6     t4    int      0
+     5     t3     -1      0
+     4     t2     -1      0
+     3     t1    int      0
      2      b    int      0
      1      a    int      0
      0    foo    int      2
@@ -96,14 +157,21 @@ Program(31)
 --------------------------
    Num  Index
 --------------------------
-     3      3
-     2      3
+     3     10
+     2     10
      1      1
      0      0
 --------------------------
 -------------------------------------------------
    Num   Name   Type  Dimen  Chain
 -------------------------------------------------
+     9     t7    int      0
+     8     t6    int      0
+     7     t5    int      0
+     6     t4    int      0
+     5     t3     -1      0
+     4     t2     -1      0
+     3     t1    int      0
      2      b    int      0
      1      a    int      0
      0    foo    int      2
@@ -111,13 +179,87 @@ Program(31)
 --------------------------
    Num  Index
 --------------------------
-     2      3
+     2     10
      1      1
      0      0
 --------------------------
 -------------------------------------------------
    Num   Name   Type  Dimen  Chain
 -------------------------------------------------
+    10     t9    int      0
+     9     t7    int      0
+     8     t6    int      0
+     7     t5    int      0
+     6     t4    int      0
+     5     t3     -1      0
+     4     t2     -1      0
+     3     t1    int      0
+     2      b    int      0
+     1      a    int      0
+     0    foo    int      2
+-------------------------------------------------
+--------------------------
+   Num  Index
+--------------------------
+     3     10
+     2     10
+     1      1
+     0      0
+--------------------------
+-------------------------------------------------
+   Num   Name   Type  Dimen  Chain
+-------------------------------------------------
+    10    t10    int      0
+     9     t7    int      0
+     8     t6    int      0
+     7     t5    int      0
+     6     t4    int      0
+     5     t3     -1      0
+     4     t2     -1      0
+     3     t1    int      0
+     2      b    int      0
+     1      a    int      0
+     0    foo    int      2
+-------------------------------------------------
+--------------------------
+   Num  Index
+--------------------------
+     3     10
+     2     10
+     1      1
+     0      0
+--------------------------
+-------------------------------------------------
+   Num   Name   Type  Dimen  Chain
+-------------------------------------------------
+     9     t7    int      0
+     8     t6    int      0
+     7     t5    int      0
+     6     t4    int      0
+     5     t3     -1      0
+     4     t2     -1      0
+     3     t1    int      0
+     2      b    int      0
+     1      a    int      0
+     0    foo    int      2
+-------------------------------------------------
+--------------------------
+   Num  Index
+--------------------------
+     2     10
+     1      1
+     0      0
+--------------------------
+-------------------------------------------------
+   Num   Name   Type  Dimen  Chain
+-------------------------------------------------
+     9     t7    int      0
+     8     t6    int      0
+     7     t5    int      0
+     6     t4    int      0
+     5     t3     -1      0
+     4     t2     -1      0
+     3     t1    int      0
      2      b    int      0
      1      a    int      0
      0    foo    int      2
@@ -128,17 +270,45 @@ Program(31)
      1      1
      0      0
 --------------------------
-  a := #100
+
+FUNCTION foo :
+  PARAM a
+  PARAM b
+
+FUNCTION main :
+  t1 := a + b
+  t2 := t1 + #0.120000
+  t3 := t2 * #3
+  t4 := #1 + t3
+  a := t4
+  ARG a
+  t5 := #1 + #2
+  ARG t5
+  ARG b
+  t6 := CALL foo
+  ARG t6
+  t7 := CALL foo
+  IF FALSE a < b GOTO label1
+  a := #0
+  GOTO label2
 LABEL label1 :
-  IF FALSE a > #0 GOTO label2
-  b := a
-  IF FALSE b != #0 GOTO label3
-  t1 := a - #1
-  a := t1
-  GOTO label4
+  b := #0
+  IF FALSE a == b GOTO label3
+  t8 := #2 * b
+  a := t8
 LABEL label3 :
-  t2 := a \ #2
-  a := t2
-LABEL label4 :
-  GOTO label1
 LABEL label2 :
+  a := #100
+LABEL label4 :
+  IF FALSE a > #0 GOTO label5
+  b := a
+  IF FALSE b != #0 GOTO label6
+  t9 := a - #1
+  a := t9
+  GOTO label7
+LABEL label6 :
+  t10 := a \ #2
+  a := t10
+LABEL label7 :
+  GOTO label4
+LABEL label5 :
