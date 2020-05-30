@@ -1,17 +1,29 @@
-#include "parse.tab.h"
 #include "ast_node.h"
+#include "parse.tab.h"
 #include "symbol_table.h"
 #include "define.h"
 #include "tac.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 extern code_node *TAC;
 
-int analysis_func_call(ast_node *node){
+int analysis_specifier(ast_node *node);
+int analysis_func_call(ast_node *node, operand *p_result);
+int analysis_exp(ast_node *exp, operand *p_result);
+void analysis_var_dec(ast_node *var_dec);
+void analysis_stmt(ast_node *stmt);
+int analysis_func_header(ast_node *func_header);
+void analysis_func_def(ast_node *func_def);
+
+int analysis_func_call(ast_node *node, operand *p_result){
     int type, index;
     ast_leaf *t;
     t = (ast_leaf *)(node->child);
+
+    code_node *code;
+    operand opn1, opn2, result;
 
     //查找符号表，寻找是否有该函数
     index = linear_search_symbol_table(t->type_id);
@@ -26,6 +38,10 @@ int analysis_func_call(ast_node *node){
     n = t->sibling;
     while(n){
         param_cnt++;
+
+        analysis_exp(n, &result);
+        code = genIR_p(OP_ARG, NULL, NULL, &result);    //生成ARG代码
+        node->code = merge(node->code, merge(n->code, code));
         n = n->sibling;
     }
 
@@ -33,99 +49,130 @@ int analysis_func_call(ast_node *node){
         print_error(node->lineno, "函数(%s)参数不匹配, 期望的是%d个, 而%d个被给予", t->type_id,\
                  ST.stack[index].dimen, param_cnt);
     }
-    return ST.stack[index].type;
+    type = ST.stack[index].type;
+
+    //中间代码部分
+    //操作数1为函数
+    opn1.opn_type = OPN_FUNC; strcpy(opn1.id, ST.stack[index].name); 
+    opn2.opn_type = -1; 
+    //在符号表中新建临时变量存储结果
+    index = linear_insert_symbol_table(newTemp(), type, 0);         //变量类型为函数返回类型
+    p_result->opn_type = OPN_VAR; strcpy(p_result->id, ST.stack[index].name);
+    code = genIR(OP_CALL, opn1, opn2, *p_result);
+
+    node->code = merge(node->code, code);
+
+    return type;
 }
 
 int analysis_exp(ast_node *exp, operand *p_result){
     /*作用：分析exp节点，并将exp作为中间代码的操作数所需的信息通过指针传递给调用者，
     并返回exp数据类型（如果是常数则返回常数类型，如果是变量则返回变量的数据类型）
     暂时只认为有0：int和1：float两种
+
+    由于需要中间代码生成，目前只处理以下几种结构：
+    1. +, -, *, /
+    2. ID
+    3. C_INT, C_FLOAT
     */
     int index, type1, type2;
     operand opn1,opn2;
     code_node *code;
 
-    if(exp->is_leaf==0){
-        switch (exp->node_type)
-        {
-        case NT_PLUS :
-        case NT_MINUS:
-        case NT_MULT :
-        case NT_DIV :
-        case NT_MOD  :
-            type1 = analysis_exp(exp->child, &opn1);
-            type2 = analysis_exp(exp->child->sibling, &opn2);
-            if(type1 != type2 ){
-                print_error(exp->lineno, "算数表达式中，int和float不能隐式转换");
-            }
+    if(exp){
+        exp->code =NULL;
 
-            //在符号表中新建临时变量存储结果
-            index = linear_insert_symbol_table(newTemp(), type1, 0); //这里认为经过了类型检验后的type1==type2
-            p_result->opn_type = OPN_VAR; strcpy(p_result->id, ST.stack[index].name);
-            code = genIR(exp->node_type==NT_PLUS? OP_PLUS:\
-                exp->node_type==NT_MINUS? OP_MINUS:\
-                exp->node_type==NT_MULT? OP_MULT:\
-                exp->node_type==NT_DIV? OP_DIV: -1, opn1, opn2, *p_result);
-            
-            exp->code = merge(merge(exp->child->code, exp->child->sibling->code), code);
-            break;
-        case NT_REL_OP1:
-        case NT_REL_OP2:
-        case NT_REL_OP3:
-        case NT_REL_OP4:
-        case NT_REL_OP5:
-        case NT_REL_OP6:
-        case NT_COMMA:
-        //bool
-        case NT_AND:
-        case NT_OR:
-            exp->code = NULL;
-            break;
-        case NT_S_PLUS_L:
-        case NT_S_PLUS_R:
-        case NT_S_MINUS_L:
-        case NT_S_MINUS_R:
-        case NT_NEG:
-        case NT_PARENTHESIS:
-        case NT_NOT:
-            analysis_exp(exp->child, p_result);
-            break;
-        case NT_FUNC_CALL:
-            analysis_func_call(exp, p_result);
-            break;
-        case NT_DOT:
-            //暂时不处理结构体
-            break;
-        default:
-            break;
-        }
-    }else{
-        ast_leaf *t;
-        t = (ast_leaf *)exp;
+        if(exp->is_leaf==0){
+            switch (exp->node_type)
+            {
+            case NT_PLUS :
+            case NT_MINUS:
+            case NT_MULT :
+            case NT_DIV :
+                type1 = analysis_exp(exp->child, &opn1);
+                type2 = analysis_exp(exp->child->sibling, &opn2);
+                if(type1 != type2 ){
+                    print_error(exp->lineno, "算数表达式中，int和float不能隐式转换");
+                }
 
-        t->code = NULL;
-        switch (t->leaf_type)
-        {
-        case ID:
-            index = linear_search_symbol_table(t->type_id);
-            if(index==-1){
-                print_error(exp->lineno, "变量(%s)未定义", t->type_id);
+                //在符号表中新建临时变量存储结果
+                index = linear_insert_symbol_table(newTemp(), type1, 0); //这里认为经过了类型检验后的type1==type2
+                p_result->opn_type = OPN_VAR; strcpy(p_result->id, ST.stack[index].name);
+                code = genIR(exp->node_type==NT_PLUS? OP_PLUS:\
+                    exp->node_type==NT_MINUS? OP_MINUS:\
+                    exp->node_type==NT_MULT? OP_MULT:\
+                    exp->node_type==NT_DIV? OP_DIV: -1, opn1, opn2, *p_result);
+                
+                exp->code = merge(merge(exp->child->code, exp->child->sibling->code), code);
+                break;
+            case NT_COMMA:
+                analysis_exp(exp->child, &opn1);
+                analysis_exp(exp->child->sibling, p_result);    //右侧的作为结果
+                exp->code = merge(exp->child->code, exp->child->sibling->code);
+                break;
+            case NT_PARENTHESIS:
+                analysis_exp(exp->child, p_result); //p_result由子exp确定
+                exp->code = exp->child->code;       //code直接传递
+                break;
+            case NT_RPARAM:
+                analysis_exp(exp->child, p_result);
+                exp->code = exp->child->code;
+                break;
+            case NT_FUNC_CALL:
+                analysis_func_call(exp, p_result);
+                break;
+            //以下的皆未处理
+            case NT_MOD  :
+            case NT_REL_OP1:
+            case NT_REL_OP2:
+            case NT_REL_OP3:
+            case NT_REL_OP4:
+            case NT_REL_OP5:
+            case NT_REL_OP6:
+            //bool
+            case NT_AND:
+            case NT_OR:
+            case NT_NOT:
+            //
+            case NT_S_PLUS_L:
+            case NT_S_PLUS_R:
+            case NT_S_MINUS_L:
+            case NT_S_MINUS_R:
+            case NT_NEG:
+            //
+            case NT_DOT: //暂时不处理结构体
+                return -1;
+            default:
+                break;
             }
-            
-            p_result->opn_type = OPN_VAR; strcpy(p_result->id, ST.stack[index].name);
-            return ST.stack[index].type;
-        case C_INT:
-            p_result->opn_type = OPN_C_INT; p_result->const_int = t->type_int;
-            return 0;
-        case C_FLOAT:
-            p_result->opn_type = OPN_C_FLOAT; p_result->const_float = t->type_float;
-            return 1;
-        case TRUE:
-        case FALSE:
-        case C_CHAR:
-            return -1; //暂时不支持char
-        default:
-            break;
+        }else{
+            ast_leaf *t;
+            t = (ast_leaf *)exp;
+
+            t->code = NULL;
+            switch (t->leaf_type)
+            {
+            case ID:
+                index = linear_search_symbol_table(t->type_id);
+                if(index==-1){
+                    print_error(exp->lineno, "变量(%s)未定义", t->type_id);
+                }
+                
+                p_result->opn_type = OPN_VAR; strcpy(p_result->id, ST.stack[index].name);
+                return ST.stack[index].type;
+            case C_INT:
+                p_result->opn_type = OPN_C_INT; p_result->const_int = t->type_int;
+                return 0;
+            case C_FLOAT:
+                p_result->opn_type = OPN_C_FLOAT; p_result->const_float = t->type_float;
+                return 1;
+            case TRUE:
+            case FALSE:
+            case C_CHAR:
+                return -1;
+            default:
+                break;
+            }
         }
     }
 }
@@ -169,31 +216,59 @@ void analysis_var_dec(ast_node *var_dec){
     }
 }
 
-void analysis_stmt(ast_node *stmt);
+void analysis_comp_st(ast_node *comp){
+    ast_node *stmt;
+    if(comp){
+        comp->code = NULL;
 
-static inline void analysis_comp_st(ast_node *comp){
-    analysis_stmt(comp->child);
+        stmt = comp->child;
+        while(stmt){
+            analysis_stmt(stmt);
+            comp->code = merge(comp->code, stmt->code);
+
+            stmt = stmt->sibling;
+        }
+    }
 }
 
 void analysis_stmt(ast_node *stmt){
     ast_leaf *t;
     int type1, type2, index;
     operand opn1, opn2, result;
+    code_node *code;
+
     if(stmt){
+        stmt->code =NULL;
         switch(stmt->node_type){
             case NT_COMP_ST:
                 location();
                 analysis_comp_st(stmt);
+
+                //重定位前打印符号表
                 print_symbol_table();
                 print_block_index_table();
+
                 relocation();
                 break;
             case NT_VAR_DEC:
                 analysis_var_dec(stmt);
                 break;
             case NT_STMT_EXP:
+                analysis_exp(stmt->child, &result);
+                stmt->code = stmt->child->code;
+                break;
             case NT_STMT_RETURN:
-                analysis_exp(stmt->child, &opn1);
+                type1 = analysis_exp(stmt->child, &opn1);
+
+                //return 语句增加一次赋值
+                index = linear_insert_symbol_table(newTemp(), type1, 0);
+                result.opn_type = OPN_VAR; strcpy(result.id, ST.stack[index].name);
+                code = genIR_p(OP_ASSIGN_, &opn1, NULL, &result);
+
+                code = merge(stmt->child->code, code);
+
+                code = merge(code, genIR_p(OP_RETURN, NULL, NULL, &result));
+                stmt->code = code;
                 break;
             case NT_STMT_ASSIGN:
             case NT_STMT_OP_ASSIGN1:
@@ -216,9 +291,8 @@ void analysis_stmt(ast_node *stmt){
                 opn2.opn_type = -1; //单个赋值，没有操作数2
                 result.opn_type = OPN_VAR; strcpy(result.id, ST.stack[index].name);
 
-                code_node *code =genIR(OP_ASSIGN, opn1, opn2, result);
+                code =genIR(OP_ASSIGN_, opn1, opn2, result);
                 stmt->code = merge(stmt->child->sibling->code, code);   //将生成的代码连接到Exp的代码
-
                 break;
             case NT_STMT_IF:
             case NT_STMT_WHILE:
@@ -233,12 +307,10 @@ void analysis_stmt(ast_node *stmt){
             default:
                 break;
         }
-        analysis_stmt(stmt->sibling);
     }
 }
 
 int analysis_func_header(ast_node *func_header){
-
     ast_node *c = func_header->child;   //ID
 
     ast_node *n, *n2;
@@ -272,32 +344,35 @@ void analysis_func_def(ast_node *func_def){
     print_block_index_table();
     relocation(); //重定位
 
-    linear_insert_symbol_table(((ast_leaf *)(c->sibling->child))->type_id, type, dimen);
+    linear_insert_symbol_table(((ast_leaf *)(c->sibling->child))->type_id, type, dimen);    //header->child -> ID
 
-    func_def->code = c->sibling->sibling->code;
+    func_def->code = c->sibling->sibling->code; //comp_st
 }
 
 void semantic_analysis(ast_node *root){
     // if(root){
+    //     root->code =NULL;
     //     switch (root->node_type)
     //         {
     //         case NT_PROGRAM:
     //             semantic_analysis(root->child);
+    //             break;
     //         case NT_VAR_DEC:
     //             analysis_var_dec(root);
-    //             semantic_analysis(root->sibling);
     //             break;
     //         case NT_FUNC_DEF:
     //             analysis_func_def(root);
-    //             root->code = merge(root->code, root->child->code);
-    //             semantic_analysis(root->sibling);
     //             break;
     //         default:
     //             printf("-1\n");
     //             break;
     //         }
+    //     semantic_analysis(root->sibling);
+    //     if(root->sibling)
+    //         root->code = merge(root->code, root->sibling->code);
     // }
     ast_node *n;
+    root->code = NULL;
     if(root){
         n = root->child;
         while(n){

@@ -1,90 +1,52 @@
-Program(38)
-    VarDec(1)
+Program(14)
+    FuncDef(3)
         Type: int
-        ID: a
-        ID: b
-        Var=(1)
-            ID: c
-            Int: 0
-    VarDec(2)
-        Type: float
-        Var=(2)
-            ID: f1
-            Float: 0.100000
-        ID: f2
-    FuncDef(7)
-        Type: int
-        Header(4)
+        Header(1)
             ID: foo
-            Param(4)
+            Param(1)
                 Type: int
-                ID: param_foo
-        CompSt(7)
-            VarDec(5)
-                Type: int
-                ID: var_foo
-            return(6)
-                Int: 0
-    FuncDef(12)
-        Type: int
-        Header(9)
-            ID: foo
-            Param(9)
-                Type: int
-                ID: param_foo
-        CompSt(12)
-            VarDec(10)
-                Type: int
-                ID: var_foo
-            return(11)
-                Int: 0
-    FuncDef(38)
-        Type: int
-        Header(14)
-            ID: main
-            Param(14)
-                Type: int
-                ID: argc
-            Param(14)
-                Type: char
-                ID: argv
-        CompSt(38)
-            CompSt(22)
-                VarDec(21)
-                    Type: int
-                    ID: xxx
-            VarDec(24)
-                Type: int
-                ID: var1
-            VarDec(25)
-                Type: int
-                ID: argc
-            Stmt=(27)
-                ID: xxx
-                Int: 1
-            StmtExp(29)
-                expCall(29)
-                    ID: foo2
-                    RParam(29)
-                        ID: a
-            StmtExp(30)
-                expCall(30)
-                    ID: foo
-            StmtExp(32)
-                exp+(32)
-                    ID: a
-                    ID: f1
-            StmtExp(33)
-                exp+(33)
-                    expCall(33)
-                        ID: foo
-                        RParam(33)
-                            ID: a
-                    ID: f1
-            Stmt=(35)
-                ID: f2
                 ID: a
-            return(37)
+            Param(1)
+                Type: int
+                ID: b
+        CompSt(3)
+    FuncDef(14)
+        Type: int
+        Header(5)
+            ID: main
+        CompSt(14)
+            VarDec(6)
+                Type: int
+                ID: a
+                ID: b
+            Stmt=(9)
+                ID: a
+                exp+(9)
+                    Int: 1
+                    exp*(9)
+                        exp()(9)
+                            exp+(9)
+                                exp()(9)
+                                    exp+(9)
+                                        ID: a
+                                        ID: b
+                                Float: 0.120000
+                        Int: 3
+            StmtExp(11)
+                expCall(11)
+                    ID: foo
+                    RParam(11)
+                        ID: a
+                    RParam(11)
+                        expCall(11)
+                            ID: foo
+                            RParam(11)
+                                exp+(11)
+                                    Int: 1
+                                    Int: 2
+                            RParam(11)
+                                ID: b
+            return(13)
                 Int: 0
 -------------------------------------------------
    Num   Name   Type  Dimen  Chain
@@ -98,76 +60,47 @@ Program(38)
 -------------------------------------------------
    Num   Name   Type  Dimen  Chain
 -------------------------------------------------
-     6 var_foo    int      0
-     5 param_foo    int      0
-     4     f2  float      0
-     3     f1  float      0
-     2      c    int      0
      1      b    int      0
      0      a    int      0
 -------------------------------------------------
 --------------------------
    Num  Index
 --------------------------
-     1      5
+     1      0
      0      0
 --------------------------
 -------------------------------------------------
    Num   Name   Type  Dimen  Chain
 -------------------------------------------------
-     7 var_foo    int      0
-     6 param_foo    int      0
-     5    foo    int      1
-     4     f2  float      0
-     3     f1  float      0
-     2      c    int      0
-     1      b    int      0
-     0      a    int      0
+    10     t8    int      0
+     9     t7    int      0
+     8     t6    int      0
+     7     t5    int      0
+     6     t4    int      0
+     5     t3     -1      0
+     4     t2     -1      0
+     3     t1    int      0
+     2      b    int      0
+     1      a    int      0
+     0    foo    int      2
 -------------------------------------------------
 --------------------------
    Num  Index
 --------------------------
-     1      6
+     1      1
      0      0
 --------------------------
-Error, 符号(foo)重定义
--------------------------------------------------
-   Num   Name   Type  Dimen  Chain
--------------------------------------------------
-     8    xxx    int      0
-     7   argv     -1      0
-     6   argc    int      0
-     5    foo    int      1
-     4     f2  float      0
-     3     f1  float      0
-     2      c    int      0
-     1      b    int      0
-     0      a    int      0
--------------------------------------------------
---------------------------
-   Num  Index
---------------------------
-     2      8
-     1      6
-     0      0
---------------------------
-Error, 符号(argc)重定义
--------------------------------------------------
-   Num   Name   Type  Dimen  Chain
--------------------------------------------------
-     8   var1    int      0
-     7   argv     -1      0
-     6   argc    int      0
-     5    foo    int      1
-     4     f2  float      0
-     3     f1  float      0
-     2      c    int      0
-     1      b    int      0
-     0      a    int      0
--------------------------------------------------
---------------------------
-   Num  Index
---------------------------
-     1      6
-     0      0
---------------------------
+  t1 := a + b
+  t2 := t1 + #0.120000
+  t3 := t2 * #3
+  t4 := #1 + t3
+  a := t4
+  ARG a
+  t5 := #1 + #2
+  ARG t5
+  ARG b
+  t6 := CALL foo
+  ARG t6
+  t7 := CALL foo
+  t8 := #0
+  RETURN t8

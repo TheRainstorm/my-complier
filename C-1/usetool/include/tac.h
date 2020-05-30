@@ -1,10 +1,11 @@
 #ifndef TAC_H_INCLUDE
 #define TAC_H_INCLUDE
+#include "define.h"
 
 enum op_type{
     OP_LABEL,
     OP_FUNCTION,
-    OP_ASSIGN,
+    OP_ASSIGN_,
     OP_PLUS,
     OP_MINUS,
     OP_MULT,
@@ -51,10 +52,12 @@ typedef struct code_node
 }code_node;
 
 
+code_node *genIR_p(int op_type, operand *p_opn1, operand *p_opn2, operand *p_result);
 code_node *genIR(int op_type, operand opn1, operand opn2, operand result);
 code_node *genAssign(int op_type, int opn_index1, int opn_index2, int res_index);
 code_node *merge(code_node *to, code_node *from);
 
 char *newTemp();
+void printIR(struct code_node *head);
 
 #endif

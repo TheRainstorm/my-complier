@@ -1,6 +1,8 @@
 #include "tac.h"
 #include "symbol_table.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 char *strcat0(char *s1,char *s2) {
     static char result[10];
@@ -31,41 +33,49 @@ char *newTemp(){
 }
 
 code_node *merge(code_node *to, code_node *from){
-    //把from连接到to后面
-    code_node *head;
+    //to为第一个双向循环链表的头指针
+    //from为第二个的头指针
+    //现在将from连接到to的尾部，形成一个新的循环链表
+    code_node *tail1, *tail2;
 
     if(!to) return from; 
     if(!from) return to;
 
-    head = to->next;
+    tail1 = to->prev;
+    tail2 = from->prev;
 
-    head->prev = to->next = from;
-    from->next = head; 
-    from->prev = to;
+    tail1->next = from;
+    from->prev = tail1;
 
-    return from;
+    tail2->next = to;
+    to->prev = tail2;
+
+    return to;
 }
 
 //输出中间代码
 void printIR(struct code_node *head){
     char opnstr1[32],opnstr2[32],resultstr[32];
     struct code_node *h=head;
+    if(!head){
+        exit(0);
+    }
     do {
         if (h->opn1.opn_type==OPN_C_INT)
              sprintf(opnstr1,"#%d",h->opn1.const_int);
         if (h->opn1.opn_type==OPN_C_FLOAT)
              sprintf(opnstr1,"#%f",h->opn1.const_float);
-        if (h->opn1.opn_type==OPN_VAR)
+        if (h->opn1.opn_type==OPN_VAR || h->opn1.opn_type==OPN_FUNC)
              sprintf(opnstr1,"%s",h->opn1.id);
         if (h->opn2.opn_type==OPN_C_INT)
              sprintf(opnstr2,"#%d",h->opn2.const_int);
         if (h->opn2.opn_type==OPN_C_FLOAT)
              sprintf(opnstr2,"#%f",h->opn2.const_float);
-        if (h->opn2.opn_type==OPN_VAR)
+        if (h->opn2.opn_type==OPN_VAR || h->opn2.opn_type==OPN_FUNC)
              sprintf(opnstr2,"%s",h->opn2.id);
         sprintf(resultstr,"%s",h->result.id);
         switch (h->op_type) {
-            case OP_ASSIGN:  printf("  %s := %s\n",resultstr,opnstr1);
+            case OP_ASSIGN_:  printf("  %s := %s\n",resultstr,opnstr1);
                             break;
             case OP_PLUS:
             case OP_MINUS:
@@ -97,10 +107,7 @@ void printIR(struct code_node *head){
                            break;
             case OP_CALL:     printf("  %s := CALL %s\n",resultstr, opnstr1);
                            break;
-            case OP_RETURN:   if (h->result.opn_type)
-                                printf("  RETURN %s\n",resultstr);
-                           else
-                                printf("  RETURN\n");
+            case OP_RETURN:   printf("  RETURN %s\n",resultstr);
                            break;
         }
     h=h->next;
@@ -117,11 +124,31 @@ code_node *genIR(int op_type, operand opn1, operand opn2, operand result){
     return n;
 }
 
-
+code_node *genIR_p(int op_type, operand *p_opn1, operand *p_opn2, operand *p_result){
+    code_node *n=(code_node *)malloc(sizeof(code_node));
+    n->op_type=op_type;
+    if(p_opn1){
+        n->opn1=*p_opn1;
+    }else{
+        n->opn1.opn_type = -1;
+    }
+    if(p_opn2){
+        n->opn2=*p_opn2;
+    }else{
+        n->opn2.opn_type = -1;
+    }
+    if(p_result){
+        n->result=*p_result;
+    }else{
+        n->result.opn_type = -1;
+    }
+    n->next=n->prev=n;
+    return n;
+}
 
 code_node *genAssign(int op_type, int opn_index1, int opn_index2, int res_index){
     operand opn1, opn2, result;
     opn1.opn_type = OPN_VAR;
-    strcpy(opn1.id, ST.stack[opn_index1]);
+    strcpy(opn1.id, ST.stack[opn_index1].name);
 
 }

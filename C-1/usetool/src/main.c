@@ -3,8 +3,8 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "parse.tab.h" //含yyparse()声明
 #include "ast_node.h"
+#include "parse.tab.h" //含yyparse()声明
 #include "symbol_table.h"
 #include "tac.h"
 #include "define.h"
@@ -59,7 +59,7 @@ int main(int argc, char *argv[]){
     relocation();
     /*----------------------语义分析 end--------------------------*/
 
-
+    printIR(root->code);
     ast_free(root);
     return 0;
 }

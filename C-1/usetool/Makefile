@@ -48,5 +48,10 @@ clean:
 	rm *.exe
 	rm $(ObjFiles)
 
+move:
+	cp -r include /d/Projects/VS_projects/my_gcc/my_gcc
+	cp -r src /d/Projects/VS_projects/my_gcc/my_gcc
+sam:
+	cp sample3.c /d/Projects/VS_projects/my_gcc/my_gcc
 run:
-	./my_gcc.exe sample2.c >./tmp/output
+	./my_gcc.exe sample3.c >./tmp/output

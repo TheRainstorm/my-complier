@@ -17,9 +17,9 @@ int main(int argc, char argv){
     // a = 1 +;
     // a = (1 + 2;
     // a = 1+2*(1 +2*6 *(5 + 6);
-    {
-        int xxx;
-    }
+    // {
+    //     int xxx;
+    // }
 
     int var1;
     int argc;   //error1 y
