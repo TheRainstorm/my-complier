@@ -17,6 +17,12 @@ enum op_type{
     OP_JLT,     //< 
     OP_JGE,     //>=
     OP_JGT,     //> 
+    OP_F_EQ,    
+    OP_F_NEQ,   
+    OP_F_JLE,   
+    OP_F_JLT,   
+    OP_F_JGE,   
+    OP_F_JGT,   
     OP_RETURN,
     OP_ARG,
     OP_CALL,
@@ -28,6 +34,7 @@ enum op_type{
 enum opn_type {
     OPN_VAR,
     OPN_FUNC,
+    OPN_LABEL,
     OPN_C_INT,
     OPN_C_FLOAT,
     OPN_C_CHAR
@@ -40,7 +47,7 @@ typedef struct operand      //操作数
     {
         int const_int;
         float const_float;
-        char id[ID_MAX_LENGTH];     //变量名或函数名
+        char id[ID_MAX_LENGTH];     //变量名或函数名或标签名
     };
 }operand;
 
@@ -58,6 +65,7 @@ code_node *genAssign(int op_type, int opn_index1, int opn_index2, int res_index)
 code_node *merge(code_node *to, code_node *from);
 
 char *newTemp();
+char *newLabel();
 void printIR(struct code_node *head);
 
 #endif

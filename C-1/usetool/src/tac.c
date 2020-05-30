@@ -11,13 +11,6 @@ char *strcat0(char *s1,char *s2) {
     return result;
 }
 
-char *newAlias() {
-    static int no=1;
-    char s[10];
-    itoa(no++,s,10);
-    return strcat0("v",s);
-}
-
 char *newLabel() {
     static int no=1;
     char s[10];
@@ -102,6 +95,18 @@ void printIR(struct code_node *head){
             case OP_EQ:       printf("  IF %s == %s GOTO %s\n",opnstr1,opnstr2,resultstr);
                            break;
             case OP_NEQ:      printf("  IF %s != %s GOTO %s\n",opnstr1,opnstr2,resultstr);
+                           break;
+            case OP_F_NEQ:      printf("  IF FALSE %s != %s GOTO %s\n",opnstr1,opnstr2,resultstr);
+                           break;
+            case OP_F_JLE:      printf("  IF FALSE %s <= %s GOTO %s\n",opnstr1,opnstr2,resultstr);
+                           break;
+            case OP_F_JLT:      printf("  IF FALSE %s < %s GOTO %s\n",opnstr1,opnstr2,resultstr);
+                           break;
+            case OP_F_JGE:      printf("  IF FALSE %s >= %s GOTO %s\n",opnstr1,opnstr2,resultstr);
+                           break;
+            case OP_F_JGT:      printf("  IF FALSE %s > %s GOTO %s\n",opnstr1,opnstr2,resultstr);
+                           break;
+            case OP_F_EQ:       printf("  IF FALSE %s == %s GOTO %s\n",opnstr1,opnstr2,resultstr);
                            break;
             case OP_ARG:      printf("  ARG %s\n",h->result.id);
                            break;

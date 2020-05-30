@@ -234,8 +234,9 @@ void analysis_comp_st(ast_node *comp){
 void analysis_stmt(ast_node *stmt){
     ast_leaf *t;
     int type1, type2, index;
-    operand opn1, opn2, result;
+    operand opn1, opn2, result, result2;
     code_node *code;
+    char * label;
 
     if(stmt){
         stmt->code =NULL;
@@ -294,15 +295,91 @@ void analysis_stmt(ast_node *stmt){
                 code =genIR(OP_ASSIGN_, opn1, opn2, result);
                 stmt->code = merge(stmt->child->sibling->code, code);   //将生成的代码连接到Exp的代码
                 break;
-            case NT_STMT_IF:
-            case NT_STMT_WHILE:
-                analysis_exp(stmt->child, &opn1);
-                analysis_stmt(stmt->child->sibling);
-                break;
             case NT_STMT_IF_ELSE:
-                analysis_exp(stmt->child, &opn1);
-                analysis_stmt(stmt->child->sibling);
-                analysis_stmt(stmt->child->sibling->sibling);
+            case NT_STMT_IF:
+                // if(Exp) Stmt
+                //Exp must be opn1 REL_OP opn2
+                type1 = stmt->child->node_type; //暂时用一下type1
+                if(NT_REL_OP1 <= type1 && type1 <= NT_REL_OP6){
+                    
+                    label = newLabel();
+                    result.opn_type = OPN_LABEL; strcpy(result.id, label);
+
+                    analysis_exp(stmt->child->child, &opn1);
+                    analysis_exp(stmt->child->child->sibling, &opn2);
+                    //if op1 relop op2 goto label1
+                    code = genIR_p(type1==NT_REL_OP1 ? OP_F_EQ : \
+                            type1==NT_REL_OP2 ? OP_F_NEQ : \
+                            type1==NT_REL_OP3 ? OP_F_JLE : \
+                            type1==NT_REL_OP4 ? OP_F_JLT : \
+                            type1==NT_REL_OP5 ? OP_F_JGE : \
+                            type1==NT_REL_OP6 ? OP_F_JGT : -1\
+                            , &opn1, &opn2, &result);
+                    
+                    // stmt1
+                    analysis_stmt(stmt->child->sibling);
+                    stmt->code = merge(code, stmt->child->sibling->code);
+
+                    //----if-else------
+                    //goto label2
+                    if(stmt->node_type==NT_STMT_IF_ELSE){
+                        label = newLabel();
+                        opn1.opn_type=OPN_LABEL; strcpy(opn1.id, label);    //不覆盖result，故使用opn1
+                        code = genIR_p(OP_GOTO, NULL, NULL, &opn1);
+
+                        stmt->code = merge(stmt->code, code);
+                    }
+                    //-----if-else-----
+
+                    //Label 1
+                    stmt->code = merge(stmt->code, genIR_p(OP_LABEL, NULL, NULL, &result));
+
+                    //----if-else------
+                    //stmt2
+                    //Label2
+                    if(stmt->node_type==NT_STMT_IF_ELSE){
+                        analysis_stmt(stmt->child->sibling->sibling);
+                        stmt->code = merge(stmt->code, stmt->child->sibling->sibling->code);
+                        stmt->code = merge(stmt->code, genIR_p(OP_LABEL, NULL, NULL, &opn1));
+                    }
+                    //-----if-else-----
+                }
+                break;
+            case NT_STMT_WHILE:
+                //while(Exp) stmt
+                type1 = stmt->child->node_type; //暂时用一下type1
+                if(NT_REL_OP1 <= type1 && type1 <= NT_REL_OP6){
+                    //generate label1, label2
+                    label = newLabel();
+                    result.opn_type = OPN_LABEL; strcpy(result.id, label);
+                    label = newLabel();
+                    result2.opn_type = OPN_LABEL; strcpy(result2.id, label);
+
+                    //label1
+                    stmt->code = genIR_p(OP_LABEL, NULL, NULL, &result);
+
+                    //if op1 relop op2 goto label2
+                    analysis_exp(stmt->child->child, &opn1);
+                    analysis_exp(stmt->child->child->sibling, &opn2);
+                    code = genIR_p(type1==NT_REL_OP1 ? OP_F_EQ : \
+                            type1==NT_REL_OP2 ? OP_F_NEQ : \
+                            type1==NT_REL_OP3 ? OP_F_JLE : \
+                            type1==NT_REL_OP4 ? OP_F_JLT : \
+                            type1==NT_REL_OP5 ? OP_F_JGE : \
+                            type1==NT_REL_OP6 ? OP_F_JGT : -1\
+                            , &opn1, &opn2, &result2);
+                    stmt->code = merge(stmt->code, code);
+
+                    //stmt
+                    analysis_stmt(stmt->child->sibling);
+                    stmt->code = merge(stmt->code, stmt->child->sibling->code);
+
+                    //goto label1
+                    stmt->code = merge(stmt->code, genIR_p(OP_GOTO, NULL, NULL, &result));
+
+                    //label2
+                    stmt->code = merge(stmt->code, genIR_p(OP_LABEL, NULL, NULL, &result2));
+                }
                 break;
             default:
                 break;
