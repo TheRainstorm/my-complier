@@ -31,6 +31,8 @@ typedef struct  //块索引表
 {
     int stack[BLOCK_INDEX_TABLE_MAX_SIZE];
     int top;
+
+    int offset_stack[BLOCK_INDEX_TABLE_MAX_SIZE];
 }BLOCK_INDEX_TABLE;
 
 extern SYMBOL_TABLE ST;
@@ -38,16 +40,19 @@ extern BLOCK_INDEX_TABLE BIT;
 //哈希表
 extern uint symbol_hash_table[SYMBOL_TABLE_MAX_SIZE];
 
+//offset
+extern int Offset;
+
 #define HASH BPHash
 uint BPHash(char* str);
 
 //
 int search_symbol_table(char *name);
-int insert_symbol_table(char *name, int type, int dimen);
+int insert_symbol_table(char *name, int type, int dimen, char flag);
 
 //
 int linear_search_symbol_table(char *name);
-int linear_insert_symbol_table(char *name, int type, int dimen);
+int linear_insert_symbol_table(char *name, int type, int dimen, char flag);
 
 void print_symbol_table();
 

@@ -49,6 +49,7 @@ typedef struct operand      //操作数
         float const_float;
         char id[ID_MAX_LENGTH];     //变量名或函数名或标签名
     };
+    int offset;         //对于变量类型记录一下偏移量，用于目标代码生成
 }operand;
 
 typedef struct code_node

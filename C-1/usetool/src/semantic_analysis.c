@@ -26,7 +26,7 @@ int analysis_func_call(ast_node *node, operand *p_result){
     operand opn1, opn2, result;
 
     //查找符号表，寻找是否有该函数
-    index = linear_search_symbol_table(t->type_id);
+    index = search_symbol_table(t->type_id);
     if(index==-1){
         print_error(node->lineno, "函数(%s)未定义", t->type_id);
         return -1;   //该情况下可能会导致报类型不匹配错误
@@ -53,11 +53,11 @@ int analysis_func_call(ast_node *node, operand *p_result){
 
     //中间代码部分
     //操作数1为函数
-    opn1.opn_type = OPN_FUNC; strcpy(opn1.id, ST.stack[index].name); 
+    opn1.opn_type = OPN_FUNC; strcpy(opn1.id, ST.stack[index].name);
     opn2.opn_type = -1; 
     //在符号表中新建临时变量存储结果
-    index = linear_insert_symbol_table(newTemp(), type, 0);         //变量类型为函数返回类型
-    p_result->opn_type = OPN_VAR; strcpy(p_result->id, ST.stack[index].name);
+    index = insert_symbol_table(newTemp(), type, 0, 'T');         //变量类型为函数返回类型
+    p_result->opn_type = OPN_VAR; strcpy(p_result->id, ST.stack[index].name); p_result->offset = ST.stack[index].offset;
     code = genIR(OP_CALL, opn1, opn2, *p_result);
 
     node->code = merge(node->code, code);
@@ -96,8 +96,8 @@ int analysis_exp(ast_node *exp, operand *p_result){
                 }
 
                 //在符号表中新建临时变量存储结果
-                index = linear_insert_symbol_table(newTemp(), type1, 0); //这里认为经过了类型检验后的type1==type2
-                p_result->opn_type = OPN_VAR; strcpy(p_result->id, ST.stack[index].name);
+                index = insert_symbol_table(newTemp(), type1, 0, 'T'); //这里认为经过了类型检验后的type1==type2
+                p_result->opn_type = OPN_VAR; strcpy(p_result->id, ST.stack[index].name); p_result->offset = ST.stack[index].offset;
                 code = genIR(exp->node_type==NT_PLUS? OP_PLUS:\
                     exp->node_type==NT_MINUS? OP_MINUS:\
                     exp->node_type==NT_MULT? OP_MULT:\
@@ -153,12 +153,12 @@ int analysis_exp(ast_node *exp, operand *p_result){
             switch (t->leaf_type)
             {
             case ID:
-                index = linear_search_symbol_table(t->type_id);
+                index = search_symbol_table(t->type_id);
                 if(index==-1){
                     print_error(exp->lineno, "变量(%s)未定义", t->type_id);
                 }
                 
-                p_result->opn_type = OPN_VAR; strcpy(p_result->id, ST.stack[index].name);
+                p_result->opn_type = OPN_VAR; strcpy(p_result->id, ST.stack[index].name);  p_result->offset = ST.stack[index].offset;
                 return ST.stack[index].type;
             case C_INT:
                 p_result->opn_type = OPN_C_INT; p_result->const_int = t->type_int;
@@ -198,6 +198,8 @@ void analysis_var_dec(ast_node *var_dec){
     ast_node *n;
     ast_leaf *t;
     operand opn, result;
+    int index;
+
     var_dec->code=NULL;
 
     type = analysis_specifier(c);
@@ -205,13 +207,14 @@ void analysis_var_dec(ast_node *var_dec){
     n = c->sibling;
     while(n){
         if(n->is_leaf){ //Var -> ID
-            linear_insert_symbol_table(((ast_leaf *)n)->type_id, type, 0);
+            insert_symbol_table(((ast_leaf *)n)->type_id, type, 0, 'V');
         }else if(n->node_type==NT_VAR_ASSIGN){ //Var -> ID=Exp
 
             analysis_exp(n->child->sibling, &opn);
-            linear_insert_symbol_table(((ast_leaf *)(n->child))->type_id, type, 0);
+            index = insert_symbol_table(((ast_leaf *)(n->child))->type_id, type, 0, 'V');
+            
 
-            result.opn_type=OPN_VAR; strcpy(result.id, ((ast_leaf *)(n->child))->type_id);
+            result.opn_type=OPN_VAR; strcpy(result.id, ST.stack[index].name); result.offset = ST.stack[index].offset;
             var_dec->code = merge(n->child->sibling->code, genIR_p(OP_ASSIGN_, &opn, NULL, &result));
         }else{
             /*Var[]*/
@@ -247,14 +250,14 @@ void analysis_stmt(ast_node *stmt){
         stmt->code =NULL;
         switch(stmt->node_type){
             case NT_COMP_ST:
-                location();
+                // location();
                 analysis_comp_st(stmt);
 
                 //重定位前打印符号表
-                print_symbol_table();
-                print_block_index_table();
+                 print_symbol_table();
+                 print_block_index_table();
 
-                relocation();
+                // relocation();
                 break;
             case NT_VAR_DEC:
                 analysis_var_dec(stmt);
@@ -266,15 +269,14 @@ void analysis_stmt(ast_node *stmt){
             case NT_STMT_RETURN:
                 type1 = analysis_exp(stmt->child, &opn1);
 
-                //return 语句增加一次赋值
-                index = linear_insert_symbol_table(newTemp(), type1, 0);
-                result.opn_type = OPN_VAR; strcpy(result.id, ST.stack[index].name);
-                code = genIR_p(OP_ASSIGN_, &opn1, NULL, &result);
+                ////return 语句增加一次赋值
+                //index = insert_symbol_table(newTemp(), type1, 0);
+                //result.opn_type = OPN_VAR; strcpy(result.id, ST.stack[index].name); result.offset = ST.stack[index].offset;
+                //code = genIR_p(OP_ASSIGN_, &opn1, NULL, &result);
 
-                code = merge(stmt->child->code, code);
+                //code = merge(stmt->child->code, code);
 
-                code = merge(code, genIR_p(OP_RETURN, NULL, NULL, &result));
-                stmt->code = code;
+                stmt->code = merge(stmt->child->code, genIR_p(OP_RETURN, NULL, NULL, &opn1));
                 break;
             case NT_STMT_ASSIGN:
             case NT_STMT_OP_ASSIGN1:
@@ -284,7 +286,7 @@ void analysis_stmt(ast_node *stmt){
                 type1 = analysis_exp(stmt->child->sibling, &opn1);
                 t = ((ast_leaf *)(stmt->child));
                 //查找符号表，确定该变量是否被定义
-                index = linear_search_symbol_table(t->type_id);
+                index = search_symbol_table(t->type_id);
                 if(index==-1){
                     print_error(stmt->lineno, "变量(%s)未定义", t->type_id);
                     // exit(-1);
@@ -295,7 +297,7 @@ void analysis_stmt(ast_node *stmt){
                 }
                 
                 opn2.opn_type = -1; //单个赋值，没有操作数2
-                result.opn_type = OPN_VAR; strcpy(result.id, ST.stack[index].name);
+                result.opn_type = OPN_VAR; strcpy(result.id, ST.stack[index].name);result.offset = ST.stack[index].offset;
 
                 code =genIR(OP_ASSIGN_, opn1, opn2, result);
                 stmt->code = merge(stmt->child->sibling->code, code);   //将生成的代码连接到Exp的代码
@@ -396,6 +398,7 @@ int analysis_func_header(ast_node *func_header){
     ast_node *c = func_header->child;   //ID
 
     operand result;
+    int index;
     //FUNCTION F
     result.opn_type=OPN_FUNC; strcpy(result.id, ((ast_leaf *)c)->type_id);
     func_header->code = genIR_p(OP_FUNCTION, NULL, NULL, &result);
@@ -409,10 +412,10 @@ int analysis_func_header(ast_node *func_header){
         dimen++;
         n2 = n->child; //Param -> Specifier ID
         param_type = analysis_specifier(n2);
-        linear_insert_symbol_table(((ast_leaf *)(n2->sibling))->type_id, param_type, 0);
+        index = insert_symbol_table(((ast_leaf *)(n2->sibling))->type_id, param_type, 0, 'V');
 
         //PARAM
-        result.opn_type=OPN_VAR; strcpy(result.id, ((ast_leaf *)(n2->sibling))->type_id);
+        result.opn_type=OPN_VAR; strcpy(result.id, ST.stack[index].name); result.offset = ST.stack[index].offset;
         func_header->code = merge(func_header->code, genIR_p(OP_PARAM, NULL, NULL, &result));
 
         n = n->sibling;
@@ -435,7 +438,7 @@ void analysis_func_def(ast_node *func_def){
     print_block_index_table();
     relocation(); //重定位
 
-    linear_insert_symbol_table(((ast_leaf *)(c->sibling->child))->type_id, type, dimen);    //header->child -> ID
+    insert_symbol_table(((ast_leaf *)(c->sibling->child))->type_id, type, dimen, 'F');    //header->child -> ID
 
     func_def->code = merge(c->sibling->code, c->sibling->sibling->code);
 }

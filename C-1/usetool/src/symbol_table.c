@@ -3,6 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+SYMBOL_TABLE ST;
+BLOCK_INDEX_TABLE BIT;
+uint symbol_hash_table[SYMBOL_TABLE_MAX_SIZE];
+
+int Offset;
+
 unsigned int BPHash(char* str) 
 { 
   unsigned int hash = 0; 
@@ -13,10 +19,18 @@ unsigned int BPHash(char* str)
   return hash;
 }
 
-static inline void set_symbol_value(symbol *sym, char *name, int type, int dimen){
+static inline void set_symbol_value(symbol *sym, char *name, int type, int dimen, char flag){
     strncpy(sym->name, name, ID_MAX_LENGTH);
     sym->type = type;
     sym->dimen = dimen;
+    sym->flag = flag;
+
+    sym->width = type == 0 ? 4 :
+        type == 1 ? 8 : 0;
+    if (sym->flag == 'V' || sym->flag == 'T') { //函数不必偏移
+        sym->offset = Offset;
+        Offset += sym->width;
+    }
 }
 
 int search_symbol_table(char *name){    //引用时调用
@@ -33,7 +47,7 @@ int search_symbol_table(char *name){    //引用时调用
         if(strcmp(name, sym->name)==0){ //定义过
             return index;
         }
-        if(sym->chain_next!=-1){
+        if(0 <= sym->chain_next && sym->chain_next <index){
             index = sym->chain_next;
         }else{
             break;
@@ -43,7 +57,7 @@ int search_symbol_table(char *name){    //引用时调用
     return -1;
 }
 
-int insert_symbol_table(char *name, int type, int dimen){  //声明时调用
+int insert_symbol_table(char *name, int type, int dimen, char flag){  //声明时调用
     symbol *sym;
 
     uint h = HASH(name)%HASH_TABLE_MAX_SIZE;
@@ -63,7 +77,7 @@ int insert_symbol_table(char *name, int type, int dimen){  //声明时调用
                 printf("Error, 符号重定义\n");
                 return -1;
             }
-            if(sym->chain_next!=-1){
+            if(0 <= sym->chain_next && sym->chain_next <index){
                 index = sym->chain_next;
             }else{
                 break;
@@ -76,7 +90,7 @@ int insert_symbol_table(char *name, int type, int dimen){  //声明时调用
     }
 
     //设置sym的属性值
-    set_symbol_value(sym, name, type, dimen);
+    set_symbol_value(sym, name, type, dimen, flag);
 
     return symbol_hash_table[h];
 }
@@ -89,7 +103,7 @@ int linear_search_symbol_table(char *name){
     return -1;
 }
 
-int linear_insert_symbol_table(char *name, int type, int dimen){
+int linear_insert_symbol_table(char *name, int type, int dimen, char flag){
     int i;
     for(i=ST.top-1; i>=0; i--){
         if(i<BIT.stack[BIT.top-1]) break;
@@ -101,7 +115,7 @@ int linear_insert_symbol_table(char *name, int type, int dimen){
     symbol *sym;
     sym = &(ST.stack[ST.top++]);
     //设置sym的属性值
-    set_symbol_value(sym, name, type, dimen);
+    set_symbol_value(sym, name, type, dimen, flag);
 
     return ST.top-1;
 }
@@ -110,22 +124,29 @@ void print_symbol_table(){
     int i=0;
     // wprintf(L"%6ls %6ls %6ls %6ls\n",L"编 号", L"变量名", L"类  型", L"链 接");
     printf("-------------------------------------------------\n");
-    printf("%6s %6s %6s %6s %6s\n", "Num", "Name", "Type", "Dimen", "Chain");
+    printf("%6s %6s %6s %6s %6s %6s %6s\n", "Num", "Name", "Type", "Dimen", "Chain", "Width", "Offset");
     printf("-------------------------------------------------\n");
     for(i=ST.top-1;i>=0;i--)
-        printf("%6d %6s %6s %6d\n", i,\
+        printf("%6d %6s %6s %6d %6d %6d %6d\n", i,\
             ST.stack[i].name,\
             ST.stack[i].type==0? "int": ST.stack[i].type==1 ? "float" : "-1",\
             ST.stack[i].dimen,\
-            ST.stack[i].chain_next);
+            ST.stack[i].chain_next,
+            ST.stack[i].width,
+            ST.stack[i].offset);
     printf("-------------------------------------------------\n");
 }
 
 void location(){
+    BIT.offset_stack[BIT.top] = Offset;
+    Offset = 0;
+
     BIT.stack[BIT.top++] = ST.top;  //push(ST.top)
 }
 
 void relocation(){
+    Offset = BIT.offset_stack[BIT.top-1];
+
     ST.top = BIT.stack[--BIT.top]; //ST.top = pop()
 }
 

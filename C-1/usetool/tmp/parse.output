@@ -3,28 +3,6 @@ Terminals unused in grammar
    VOID
 
 
-State 37 conflicts: 1 shift/reduce
-State 53 conflicts: 1 shift/reduce
-State 61 conflicts: 7 shift/reduce
-State 62 conflicts: 7 shift/reduce
-State 63 conflicts: 7 shift/reduce
-State 64 conflicts: 7 shift/reduce
-State 65 conflicts: 20 shift/reduce
-State 68 conflicts: 7 shift/reduce
-State 69 conflicts: 7 shift/reduce
-State 70 conflicts: 7 shift/reduce
-State 79 conflicts: 19 shift/reduce
-State 97 conflicts: 7 shift/reduce
-State 98 conflicts: 7 shift/reduce, 16 reduce/reduce
-State 99 conflicts: 7 shift/reduce
-State 100 conflicts: 7 shift/reduce
-State 101 conflicts: 7 shift/reduce
-State 102 conflicts: 7 shift/reduce
-State 103 conflicts: 7 shift/reduce
-State 104 conflicts: 7 shift/reduce
-State 105 conflicts: 7 shift/reduce
-
-
 Grammar
 
     0 $accept: Program $end
@@ -109,15 +87,12 @@ Grammar
    62    | FALSE
    63    | ID '(' RParamList ')'
    64    | ID '.' ID
-   65    | Exp Exp
-   66    | '(' Exp
-   67    | Exp '+'
 
-   68 RParamList: /* empty */
-   69           | RParam ',' RParamList
-   70           | RParam
+   65 RParamList: /* empty */
+   66           | RParam ',' RParamList
+   67           | RParam
 
-   71 RParam: Exp
+   68 RParam: Exp
 
 
 Terminals, with rules where they appear
@@ -125,11 +100,11 @@ Terminals, with rules where they appear
 $end (0) 0
 '!' (33) 53
 '%' (37) 45
-'(' (40) 14 35 36 37 55 63 66
+'(' (40) 14 35 36 37 55 63
 ')' (41) 14 35 36 37 55 63
 '*' (42) 43
-'+' (43) 41 67
-',' (44) 8 16 56 69
+'+' (43) 41
+',' (44) 8 16 56 66
 '-' (45) 42 54
 '.' (46) 64
 '/' (47) 44
@@ -202,12 +177,12 @@ Stmt (57)
     on left: 32 33 34 35 36 37 38 39 40, on right: 31 35 36 37
 Exp (58)
     on left: 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58
-    59 60 61 62 63 64 65 66 67, on right: 11 32 33 34 35 36 37 38 41
-    42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 65 66 67 71
+    59 60 61 62 63 64, on right: 11 32 33 34 35 36 37 38 41 42 43 44
+    45 46 47 48 49 50 51 52 53 54 55 56 68
 RParamList (59)
-    on left: 68 69 70, on right: 63 69
+    on left: 65 66 67, on right: 63 66
 RParam (60)
-    on left: 71, on right: 69 70
+    on left: 68, on right: 66 67
 
 
 State 0
@@ -641,7 +616,6 @@ State 35
 State 36
 
    55 Exp: '(' . Exp ')'
-   66    | '(' . Exp
 
     S_PLUS   shift, and go to state 32
     S_MINUS  shift, and go to state 33
@@ -667,7 +641,6 @@ State 37
     '.'  shift, and go to state 66
     '('  shift, and go to state 67
 
-    '('       [reduce using rule 57 (Exp)]
     $default  reduce using rule 57 (Exp)
 
 
@@ -720,8 +693,6 @@ State 43
    51    | Exp . AND Exp
    52    | Exp . OR Exp
    56    | Exp . ',' Exp
-   65    | Exp . Exp
-   67    | Exp . '+'
 
     S_PLUS   shift, and go to state 68
     S_MINUS  shift, and go to state 69
@@ -732,26 +703,16 @@ State 43
     '%'      shift, and go to state 74
     AND      shift, and go to state 75
     OR       shift, and go to state 76
-    '!'      shift, and go to state 35
-    '('      shift, and go to state 36
     REL_OP   shift, and go to state 78
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
 
     $default  reduce using rule 11 (Var)
-
-    Exp  go to state 79
 
 
 State 44
 
    14 FuncHeader: ID '(' ParamList . ')'
 
-    ')'  shift, and go to state 80
+    ')'  shift, and go to state 79
 
 
 State 45
@@ -759,7 +720,7 @@ State 45
    16 ParamList: Param . ',' ParamList
    17          | Param .
 
-    ','  shift, and go to state 81
+    ','  shift, and go to state 80
 
     $default  reduce using rule 17 (ParamList)
 
@@ -768,7 +729,7 @@ State 46
 
    18 Param: Specificer . ID
 
-    ID  shift, and go to state 82
+    ID  shift, and go to state 81
 
 
 State 47
@@ -792,7 +753,7 @@ State 49
 
    12 Var: Var '[' C_INT . ']'
 
-    ']'  shift, and go to state 83
+    ']'  shift, and go to state 82
 
 
 State 50
@@ -800,14 +761,14 @@ State 50
    35 Stmt: IF . '(' Exp ')' Stmt
    36     | IF . '(' Exp ')' Stmt ELSE Stmt
 
-    '('  shift, and go to state 84
+    '('  shift, and go to state 83
 
 
 State 51
 
    37 Stmt: WHILE . '(' Exp ')' Stmt
 
-    '('  shift, and go to state 85
+    '('  shift, and go to state 84
 
 
 State 52
@@ -826,7 +787,7 @@ State 52
     TRUE     shift, and go to state 41
     FALSE    shift, and go to state 42
 
-    Exp  go to state 86
+    Exp  go to state 85
 
 
 State 53
@@ -838,11 +799,10 @@ State 53
    64    | ID . '.' ID
 
     '.'        shift, and go to state 66
-    '='        shift, and go to state 87
+    '='        shift, and go to state 86
     '('        shift, and go to state 67
-    OP_ASSIGN  shift, and go to state 88
+    OP_ASSIGN  shift, and go to state 87
 
-    '('       [reduce using rule 57 (Exp)]
     $default  reduce using rule 57 (Exp)
 
 
@@ -864,7 +824,7 @@ State 56
 
    29 CompSt: '{' StmtList . '}'
 
-    '}'  shift, and go to state 89
+    '}'  shift, and go to state 88
 
 
 State 57
@@ -897,7 +857,7 @@ State 57
     VarDec      go to state 54
     Specificer  go to state 30
     CompSt      go to state 55
-    StmtList    go to state 90
+    StmtList    go to state 89
     Stmt        go to state 57
     Exp         go to state 58
 
@@ -916,8 +876,6 @@ State 58
    51    | Exp . AND Exp
    52    | Exp . OR Exp
    56    | Exp . ',' Exp
-   65    | Exp . Exp
-   67    | Exp . '+'
 
     S_PLUS   shift, and go to state 68
     S_MINUS  shift, and go to state 69
@@ -928,19 +886,9 @@ State 58
     '%'      shift, and go to state 74
     AND      shift, and go to state 75
     OR       shift, and go to state 76
-    '!'      shift, and go to state 35
     ','      shift, and go to state 77
-    ';'      shift, and go to state 91
-    '('      shift, and go to state 36
+    ';'      shift, and go to state 90
     REL_OP   shift, and go to state 78
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
-
-    Exp  go to state 79
 
 
 State 59
@@ -971,30 +919,11 @@ State 61
    51    | Exp . AND Exp
    52    | Exp . OR Exp
    56    | Exp . ',' Exp
-   65    | Exp . Exp
-   67    | Exp . '+'
 
     S_PLUS   shift, and go to state 68
     S_MINUS  shift, and go to state 69
-    '!'      shift, and go to state 35
-    '('      shift, and go to state 36
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
 
-    '('       [reduce using rule 47 (Exp)]
-    ID        [reduce using rule 47 (Exp)]
-    C_INT     [reduce using rule 47 (Exp)]
-    C_FLOAT   [reduce using rule 47 (Exp)]
-    C_CHAR    [reduce using rule 47 (Exp)]
-    TRUE      [reduce using rule 47 (Exp)]
-    FALSE     [reduce using rule 47 (Exp)]
     $default  reduce using rule 47 (Exp)
-
-    Exp  go to state 79
 
 
 State 62
@@ -1011,30 +940,11 @@ State 62
    51    | Exp . AND Exp
    52    | Exp . OR Exp
    56    | Exp . ',' Exp
-   65    | Exp . Exp
-   67    | Exp . '+'
 
     S_PLUS   shift, and go to state 68
     S_MINUS  shift, and go to state 69
-    '!'      shift, and go to state 35
-    '('      shift, and go to state 36
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
 
-    '('       [reduce using rule 48 (Exp)]
-    ID        [reduce using rule 48 (Exp)]
-    C_INT     [reduce using rule 48 (Exp)]
-    C_FLOAT   [reduce using rule 48 (Exp)]
-    C_CHAR    [reduce using rule 48 (Exp)]
-    TRUE      [reduce using rule 48 (Exp)]
-    FALSE     [reduce using rule 48 (Exp)]
     $default  reduce using rule 48 (Exp)
-
-    Exp  go to state 79
 
 
 State 63
@@ -1051,30 +961,11 @@ State 63
    52    | Exp . OR Exp
    54    | '-' Exp .
    56    | Exp . ',' Exp
-   65    | Exp . Exp
-   67    | Exp . '+'
 
     S_PLUS   shift, and go to state 68
     S_MINUS  shift, and go to state 69
-    '!'      shift, and go to state 35
-    '('      shift, and go to state 36
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
 
-    '('       [reduce using rule 54 (Exp)]
-    ID        [reduce using rule 54 (Exp)]
-    C_INT     [reduce using rule 54 (Exp)]
-    C_FLOAT   [reduce using rule 54 (Exp)]
-    C_CHAR    [reduce using rule 54 (Exp)]
-    TRUE      [reduce using rule 54 (Exp)]
-    FALSE     [reduce using rule 54 (Exp)]
     $default  reduce using rule 54 (Exp)
-
-    Exp  go to state 79
 
 
 State 64
@@ -1091,30 +982,11 @@ State 64
    52    | Exp . OR Exp
    53    | '!' Exp .
    56    | Exp . ',' Exp
-   65    | Exp . Exp
-   67    | Exp . '+'
 
     S_PLUS   shift, and go to state 68
     S_MINUS  shift, and go to state 69
-    '!'      shift, and go to state 35
-    '('      shift, and go to state 36
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
 
-    '('       [reduce using rule 53 (Exp)]
-    ID        [reduce using rule 53 (Exp)]
-    C_INT     [reduce using rule 53 (Exp)]
-    C_FLOAT   [reduce using rule 53 (Exp)]
-    C_CHAR    [reduce using rule 53 (Exp)]
-    TRUE      [reduce using rule 53 (Exp)]
-    FALSE     [reduce using rule 53 (Exp)]
     $default  reduce using rule 53 (Exp)
-
-    Exp  go to state 79
 
 
 State 65
@@ -1131,9 +1003,6 @@ State 65
    52    | Exp . OR Exp
    55    | '(' Exp . ')'
    56    | Exp . ',' Exp
-   65    | Exp . Exp
-   66    | '(' Exp .
-   67    | Exp . '+'
 
     S_PLUS   shift, and go to state 68
     S_MINUS  shift, and go to state 69
@@ -1144,48 +1013,16 @@ State 65
     '%'      shift, and go to state 74
     AND      shift, and go to state 75
     OR       shift, and go to state 76
-    '!'      shift, and go to state 35
     ','      shift, and go to state 77
-    '('      shift, and go to state 36
-    ')'      shift, and go to state 92
+    ')'      shift, and go to state 91
     REL_OP   shift, and go to state 78
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
-
-    S_PLUS    [reduce using rule 66 (Exp)]
-    S_MINUS   [reduce using rule 66 (Exp)]
-    '+'       [reduce using rule 66 (Exp)]
-    '-'       [reduce using rule 66 (Exp)]
-    '*'       [reduce using rule 66 (Exp)]
-    '/'       [reduce using rule 66 (Exp)]
-    '%'       [reduce using rule 66 (Exp)]
-    AND       [reduce using rule 66 (Exp)]
-    OR        [reduce using rule 66 (Exp)]
-    '!'       [reduce using rule 66 (Exp)]
-    ','       [reduce using rule 66 (Exp)]
-    '('       [reduce using rule 66 (Exp)]
-    ')'       [reduce using rule 66 (Exp)]
-    REL_OP    [reduce using rule 66 (Exp)]
-    ID        [reduce using rule 66 (Exp)]
-    C_INT     [reduce using rule 66 (Exp)]
-    C_FLOAT   [reduce using rule 66 (Exp)]
-    C_CHAR    [reduce using rule 66 (Exp)]
-    TRUE      [reduce using rule 66 (Exp)]
-    FALSE     [reduce using rule 66 (Exp)]
-    $default  reduce using rule 66 (Exp)
-
-    Exp  go to state 79
 
 
 State 66
 
    64 Exp: ID '.' . ID
 
-    ID  shift, and go to state 93
+    ID  shift, and go to state 92
 
 
 State 67
@@ -1204,101 +1041,30 @@ State 67
     TRUE     shift, and go to state 41
     FALSE    shift, and go to state 42
 
-    $default  reduce using rule 68 (RParamList)
+    $default  reduce using rule 65 (RParamList)
 
-    Exp         go to state 94
-    RParamList  go to state 95
-    RParam      go to state 96
+    Exp         go to state 93
+    RParamList  go to state 94
+    RParam      go to state 95
 
 
 State 68
 
-   47 Exp: S_PLUS . Exp
-   49    | Exp S_PLUS .
+   49 Exp: Exp S_PLUS .
 
-    S_PLUS   shift, and go to state 32
-    S_MINUS  shift, and go to state 33
-    '!'      shift, and go to state 35
-    '('      shift, and go to state 36
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
-
-    '('       [reduce using rule 49 (Exp)]
-    ID        [reduce using rule 49 (Exp)]
-    C_INT     [reduce using rule 49 (Exp)]
-    C_FLOAT   [reduce using rule 49 (Exp)]
-    C_CHAR    [reduce using rule 49 (Exp)]
-    TRUE      [reduce using rule 49 (Exp)]
-    FALSE     [reduce using rule 49 (Exp)]
     $default  reduce using rule 49 (Exp)
-
-    Exp  go to state 61
 
 
 State 69
 
-   48 Exp: S_MINUS . Exp
-   50    | Exp S_MINUS .
+   50 Exp: Exp S_MINUS .
 
-    S_PLUS   shift, and go to state 32
-    S_MINUS  shift, and go to state 33
-    '!'      shift, and go to state 35
-    '('      shift, and go to state 36
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
-
-    '('       [reduce using rule 50 (Exp)]
-    ID        [reduce using rule 50 (Exp)]
-    C_INT     [reduce using rule 50 (Exp)]
-    C_FLOAT   [reduce using rule 50 (Exp)]
-    C_CHAR    [reduce using rule 50 (Exp)]
-    TRUE      [reduce using rule 50 (Exp)]
-    FALSE     [reduce using rule 50 (Exp)]
     $default  reduce using rule 50 (Exp)
-
-    Exp  go to state 62
 
 
 State 70
 
    41 Exp: Exp '+' . Exp
-   67    | Exp '+' .
-
-    S_PLUS   shift, and go to state 32
-    S_MINUS  shift, and go to state 33
-    '!'      shift, and go to state 35
-    '('      shift, and go to state 36
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
-
-    '('       [reduce using rule 67 (Exp)]
-    ID        [reduce using rule 67 (Exp)]
-    C_INT     [reduce using rule 67 (Exp)]
-    C_FLOAT   [reduce using rule 67 (Exp)]
-    C_CHAR    [reduce using rule 67 (Exp)]
-    TRUE      [reduce using rule 67 (Exp)]
-    FALSE     [reduce using rule 67 (Exp)]
-    $default  reduce using rule 67 (Exp)
-
-    Exp  go to state 97
-
-
-State 71
-
-   42 Exp: Exp '-' . Exp
-   54    | '-' . Exp
 
     S_PLUS   shift, and go to state 32
     S_MINUS  shift, and go to state 33
@@ -1312,7 +1078,26 @@ State 71
     TRUE     shift, and go to state 41
     FALSE    shift, and go to state 42
 
-    Exp  go to state 98
+    Exp  go to state 96
+
+
+State 71
+
+   42 Exp: Exp '-' . Exp
+
+    S_PLUS   shift, and go to state 32
+    S_MINUS  shift, and go to state 33
+    '-'      shift, and go to state 34
+    '!'      shift, and go to state 35
+    '('      shift, and go to state 36
+    ID       shift, and go to state 37
+    C_INT    shift, and go to state 38
+    C_FLOAT  shift, and go to state 39
+    C_CHAR   shift, and go to state 40
+    TRUE     shift, and go to state 41
+    FALSE    shift, and go to state 42
+
+    Exp  go to state 97
 
 
 State 72
@@ -1331,7 +1116,7 @@ State 72
     TRUE     shift, and go to state 41
     FALSE    shift, and go to state 42
 
-    Exp  go to state 99
+    Exp  go to state 98
 
 
 State 73
@@ -1350,7 +1135,7 @@ State 73
     TRUE     shift, and go to state 41
     FALSE    shift, and go to state 42
 
-    Exp  go to state 100
+    Exp  go to state 99
 
 
 State 74
@@ -1369,7 +1154,7 @@ State 74
     TRUE     shift, and go to state 41
     FALSE    shift, and go to state 42
 
-    Exp  go to state 101
+    Exp  go to state 100
 
 
 State 75
@@ -1388,7 +1173,7 @@ State 75
     TRUE     shift, and go to state 41
     FALSE    shift, and go to state 42
 
-    Exp  go to state 102
+    Exp  go to state 101
 
 
 State 76
@@ -1407,7 +1192,7 @@ State 76
     TRUE     shift, and go to state 41
     FALSE    shift, and go to state 42
 
-    Exp  go to state 103
+    Exp  go to state 102
 
 
 State 77
@@ -1426,7 +1211,7 @@ State 77
     TRUE     shift, and go to state 41
     FALSE    shift, and go to state 42
 
-    Exp  go to state 104
+    Exp  go to state 103
 
 
 State 78
@@ -1445,78 +1230,17 @@ State 78
     TRUE     shift, and go to state 41
     FALSE    shift, and go to state 42
 
-    Exp  go to state 105
+    Exp  go to state 104
 
 
 State 79
-
-   41 Exp: Exp . '+' Exp
-   42    | Exp . '-' Exp
-   43    | Exp . '*' Exp
-   44    | Exp . '/' Exp
-   45    | Exp . '%' Exp
-   46    | Exp . REL_OP Exp
-   49    | Exp . S_PLUS
-   50    | Exp . S_MINUS
-   51    | Exp . AND Exp
-   52    | Exp . OR Exp
-   56    | Exp . ',' Exp
-   65    | Exp . Exp
-   65    | Exp Exp .
-   67    | Exp . '+'
-
-    S_PLUS   shift, and go to state 68
-    S_MINUS  shift, and go to state 69
-    '+'      shift, and go to state 70
-    '-'      shift, and go to state 71
-    '*'      shift, and go to state 72
-    '/'      shift, and go to state 73
-    '%'      shift, and go to state 74
-    AND      shift, and go to state 75
-    OR       shift, and go to state 76
-    '!'      shift, and go to state 35
-    ','      shift, and go to state 77
-    '('      shift, and go to state 36
-    REL_OP   shift, and go to state 78
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
-
-    S_PLUS    [reduce using rule 65 (Exp)]
-    S_MINUS   [reduce using rule 65 (Exp)]
-    '+'       [reduce using rule 65 (Exp)]
-    '-'       [reduce using rule 65 (Exp)]
-    '*'       [reduce using rule 65 (Exp)]
-    '/'       [reduce using rule 65 (Exp)]
-    '%'       [reduce using rule 65 (Exp)]
-    AND       [reduce using rule 65 (Exp)]
-    OR        [reduce using rule 65 (Exp)]
-    '!'       [reduce using rule 65 (Exp)]
-    ','       [reduce using rule 65 (Exp)]
-    '('       [reduce using rule 65 (Exp)]
-    REL_OP    [reduce using rule 65 (Exp)]
-    ID        [reduce using rule 65 (Exp)]
-    C_INT     [reduce using rule 65 (Exp)]
-    C_FLOAT   [reduce using rule 65 (Exp)]
-    C_CHAR    [reduce using rule 65 (Exp)]
-    TRUE      [reduce using rule 65 (Exp)]
-    FALSE     [reduce using rule 65 (Exp)]
-    $default  reduce using rule 65 (Exp)
-
-    Exp  go to state 79
-
-
-State 80
 
    14 FuncHeader: ID '(' ParamList ')' .
 
     $default  reduce using rule 14 (FuncHeader)
 
 
-State 81
+State 80
 
    16 ParamList: Param ',' . ParamList
 
@@ -1528,29 +1252,48 @@ State 81
 
     $default  reduce using rule 15 (ParamList)
 
-    ParamList   go to state 106
+    ParamList   go to state 105
     Param       go to state 45
     Specificer  go to state 46
 
 
-State 82
+State 81
 
    18 Param: Specificer ID .
 
     $default  reduce using rule 18 (Param)
 
 
-State 83
+State 82
 
    12 Var: Var '[' C_INT ']' .
 
     $default  reduce using rule 12 (Var)
 
 
-State 84
+State 83
 
    35 Stmt: IF '(' . Exp ')' Stmt
    36     | IF '(' . Exp ')' Stmt ELSE Stmt
+
+    S_PLUS   shift, and go to state 32
+    S_MINUS  shift, and go to state 33
+    '-'      shift, and go to state 34
+    '!'      shift, and go to state 35
+    '('      shift, and go to state 36
+    ID       shift, and go to state 37
+    C_INT    shift, and go to state 38
+    C_FLOAT  shift, and go to state 39
+    C_CHAR   shift, and go to state 40
+    TRUE     shift, and go to state 41
+    FALSE    shift, and go to state 42
+
+    Exp  go to state 106
+
+
+State 84
+
+   37 Stmt: WHILE '(' . Exp ')' Stmt
 
     S_PLUS   shift, and go to state 32
     S_MINUS  shift, and go to state 33
@@ -1569,7 +1312,36 @@ State 84
 
 State 85
 
-   37 Stmt: WHILE '(' . Exp ')' Stmt
+   38 Stmt: RETURN Exp . ';'
+   41 Exp: Exp . '+' Exp
+   42    | Exp . '-' Exp
+   43    | Exp . '*' Exp
+   44    | Exp . '/' Exp
+   45    | Exp . '%' Exp
+   46    | Exp . REL_OP Exp
+   49    | Exp . S_PLUS
+   50    | Exp . S_MINUS
+   51    | Exp . AND Exp
+   52    | Exp . OR Exp
+   56    | Exp . ',' Exp
+
+    S_PLUS   shift, and go to state 68
+    S_MINUS  shift, and go to state 69
+    '+'      shift, and go to state 70
+    '-'      shift, and go to state 71
+    '*'      shift, and go to state 72
+    '/'      shift, and go to state 73
+    '%'      shift, and go to state 74
+    AND      shift, and go to state 75
+    OR       shift, and go to state 76
+    ','      shift, and go to state 77
+    ';'      shift, and go to state 108
+    REL_OP   shift, and go to state 78
+
+
+State 86
+
+   33 Stmt: ID '=' . Exp ';'
 
     S_PLUS   shift, and go to state 32
     S_MINUS  shift, and go to state 33
@@ -1583,53 +1355,12 @@ State 85
     TRUE     shift, and go to state 41
     FALSE    shift, and go to state 42
 
-    Exp  go to state 108
-
-
-State 86
-
-   38 Stmt: RETURN Exp . ';'
-   41 Exp: Exp . '+' Exp
-   42    | Exp . '-' Exp
-   43    | Exp . '*' Exp
-   44    | Exp . '/' Exp
-   45    | Exp . '%' Exp
-   46    | Exp . REL_OP Exp
-   49    | Exp . S_PLUS
-   50    | Exp . S_MINUS
-   51    | Exp . AND Exp
-   52    | Exp . OR Exp
-   56    | Exp . ',' Exp
-   65    | Exp . Exp
-   67    | Exp . '+'
-
-    S_PLUS   shift, and go to state 68
-    S_MINUS  shift, and go to state 69
-    '+'      shift, and go to state 70
-    '-'      shift, and go to state 71
-    '*'      shift, and go to state 72
-    '/'      shift, and go to state 73
-    '%'      shift, and go to state 74
-    AND      shift, and go to state 75
-    OR       shift, and go to state 76
-    '!'      shift, and go to state 35
-    ','      shift, and go to state 77
-    ';'      shift, and go to state 109
-    '('      shift, and go to state 36
-    REL_OP   shift, and go to state 78
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
-
-    Exp  go to state 79
+    Exp  go to state 109
 
 
 State 87
 
-   33 Stmt: ID '=' . Exp ';'
+   34 Stmt: ID OP_ASSIGN . Exp ';'
 
     S_PLUS   shift, and go to state 32
     S_MINUS  shift, and go to state 33
@@ -1648,59 +1379,40 @@ State 87
 
 State 88
 
-   34 Stmt: ID OP_ASSIGN . Exp ';'
-
-    S_PLUS   shift, and go to state 32
-    S_MINUS  shift, and go to state 33
-    '-'      shift, and go to state 34
-    '!'      shift, and go to state 35
-    '('      shift, and go to state 36
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
-
-    Exp  go to state 111
-
-
-State 89
-
    29 CompSt: '{' StmtList '}' .
 
     $default  reduce using rule 29 (CompSt)
 
 
-State 90
+State 89
 
    31 StmtList: Stmt StmtList .
 
     $default  reduce using rule 31 (StmtList)
 
 
-State 91
+State 90
 
    32 Stmt: Exp ';' .
 
     $default  reduce using rule 32 (Stmt)
 
 
-State 92
+State 91
 
    55 Exp: '(' Exp ')' .
 
     $default  reduce using rule 55 (Exp)
 
 
-State 93
+State 92
 
    64 Exp: ID '.' ID .
 
     $default  reduce using rule 64 (Exp)
 
 
-State 94
+State 93
 
    41 Exp: Exp . '+' Exp
    42    | Exp . '-' Exp
@@ -1713,9 +1425,7 @@ State 94
    51    | Exp . AND Exp
    52    | Exp . OR Exp
    56    | Exp . ',' Exp
-   65    | Exp . Exp
-   67    | Exp . '+'
-   71 RParam: Exp .
+   68 RParam: Exp .
 
     S_PLUS   shift, and go to state 68
     S_MINUS  shift, and go to state 69
@@ -1726,39 +1436,29 @@ State 94
     '%'      shift, and go to state 74
     AND      shift, and go to state 75
     OR       shift, and go to state 76
-    '!'      shift, and go to state 35
-    '('      shift, and go to state 36
     REL_OP   shift, and go to state 78
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
 
-    $default  reduce using rule 71 (RParam)
+    $default  reduce using rule 68 (RParam)
 
-    Exp  go to state 79
+
+State 94
+
+   63 Exp: ID '(' RParamList . ')'
+
+    ')'  shift, and go to state 111
 
 
 State 95
 
-   63 Exp: ID '(' RParamList . ')'
+   66 RParamList: RParam . ',' RParamList
+   67           | RParam .
 
-    ')'  shift, and go to state 112
+    ','  shift, and go to state 112
+
+    $default  reduce using rule 67 (RParamList)
 
 
 State 96
-
-   69 RParamList: RParam . ',' RParamList
-   70           | RParam .
-
-    ','  shift, and go to state 113
-
-    $default  reduce using rule 70 (RParamList)
-
-
-State 97
 
    41 Exp: Exp . '+' Exp
    41    | Exp '+' Exp .
@@ -1772,36 +1472,17 @@ State 97
    51    | Exp . AND Exp
    52    | Exp . OR Exp
    56    | Exp . ',' Exp
-   65    | Exp . Exp
-   67    | Exp . '+'
 
     S_PLUS   shift, and go to state 68
     S_MINUS  shift, and go to state 69
     '*'      shift, and go to state 72
     '/'      shift, and go to state 73
     '%'      shift, and go to state 74
-    '!'      shift, and go to state 35
-    '('      shift, and go to state 36
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
 
-    '('       [reduce using rule 41 (Exp)]
-    ID        [reduce using rule 41 (Exp)]
-    C_INT     [reduce using rule 41 (Exp)]
-    C_FLOAT   [reduce using rule 41 (Exp)]
-    C_CHAR    [reduce using rule 41 (Exp)]
-    TRUE      [reduce using rule 41 (Exp)]
-    FALSE     [reduce using rule 41 (Exp)]
     $default  reduce using rule 41 (Exp)
 
-    Exp  go to state 79
 
-
-State 98
+State 97
 
    41 Exp: Exp . '+' Exp
    42    | Exp . '-' Exp
@@ -1814,63 +1495,18 @@ State 98
    50    | Exp . S_MINUS
    51    | Exp . AND Exp
    52    | Exp . OR Exp
-   54    | '-' Exp .
    56    | Exp . ',' Exp
-   65    | Exp . Exp
-   67    | Exp . '+'
 
     S_PLUS   shift, and go to state 68
     S_MINUS  shift, and go to state 69
-    '!'      shift, and go to state 35
-    '('      shift, and go to state 36
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
+    '*'      shift, and go to state 72
+    '/'      shift, and go to state 73
+    '%'      shift, and go to state 74
 
-    '+'       reduce using rule 42 (Exp)
-    '+'       [reduce using rule 54 (Exp)]
-    '-'       reduce using rule 42 (Exp)
-    '-'       [reduce using rule 54 (Exp)]
-    '*'       reduce using rule 54 (Exp)
-    '/'       reduce using rule 54 (Exp)
-    '%'       reduce using rule 54 (Exp)
-    AND       reduce using rule 42 (Exp)
-    AND       [reduce using rule 54 (Exp)]
-    OR        reduce using rule 42 (Exp)
-    OR        [reduce using rule 54 (Exp)]
-    ','       reduce using rule 42 (Exp)
-    ','       [reduce using rule 54 (Exp)]
-    ';'       reduce using rule 42 (Exp)
-    ';'       [reduce using rule 54 (Exp)]
-    '('       [reduce using rule 42 (Exp)]
-    '('       [reduce using rule 54 (Exp)]
-    ')'       reduce using rule 42 (Exp)
-    ')'       [reduce using rule 54 (Exp)]
-    '['       reduce using rule 42 (Exp)
-    '['       [reduce using rule 54 (Exp)]
-    REL_OP    reduce using rule 42 (Exp)
-    REL_OP    [reduce using rule 54 (Exp)]
-    ID        [reduce using rule 42 (Exp)]
-    ID        [reduce using rule 54 (Exp)]
-    C_INT     [reduce using rule 42 (Exp)]
-    C_INT     [reduce using rule 54 (Exp)]
-    C_FLOAT   [reduce using rule 42 (Exp)]
-    C_FLOAT   [reduce using rule 54 (Exp)]
-    C_CHAR    [reduce using rule 42 (Exp)]
-    C_CHAR    [reduce using rule 54 (Exp)]
-    TRUE      [reduce using rule 42 (Exp)]
-    TRUE      [reduce using rule 54 (Exp)]
-    FALSE     [reduce using rule 42 (Exp)]
-    FALSE     [reduce using rule 54 (Exp)]
     $default  reduce using rule 42 (Exp)
 
-    Exp  go to state 79
 
-
-State 99
+State 98
 
    41 Exp: Exp . '+' Exp
    42    | Exp . '-' Exp
@@ -1884,33 +1520,14 @@ State 99
    51    | Exp . AND Exp
    52    | Exp . OR Exp
    56    | Exp . ',' Exp
-   65    | Exp . Exp
-   67    | Exp . '+'
 
     S_PLUS   shift, and go to state 68
     S_MINUS  shift, and go to state 69
-    '!'      shift, and go to state 35
-    '('      shift, and go to state 36
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
 
-    '('       [reduce using rule 43 (Exp)]
-    ID        [reduce using rule 43 (Exp)]
-    C_INT     [reduce using rule 43 (Exp)]
-    C_FLOAT   [reduce using rule 43 (Exp)]
-    C_CHAR    [reduce using rule 43 (Exp)]
-    TRUE      [reduce using rule 43 (Exp)]
-    FALSE     [reduce using rule 43 (Exp)]
     $default  reduce using rule 43 (Exp)
 
-    Exp  go to state 79
 
-
-State 100
+State 99
 
    41 Exp: Exp . '+' Exp
    42    | Exp . '-' Exp
@@ -1924,33 +1541,14 @@ State 100
    51    | Exp . AND Exp
    52    | Exp . OR Exp
    56    | Exp . ',' Exp
-   65    | Exp . Exp
-   67    | Exp . '+'
 
     S_PLUS   shift, and go to state 68
     S_MINUS  shift, and go to state 69
-    '!'      shift, and go to state 35
-    '('      shift, and go to state 36
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
 
-    '('       [reduce using rule 44 (Exp)]
-    ID        [reduce using rule 44 (Exp)]
-    C_INT     [reduce using rule 44 (Exp)]
-    C_FLOAT   [reduce using rule 44 (Exp)]
-    C_CHAR    [reduce using rule 44 (Exp)]
-    TRUE      [reduce using rule 44 (Exp)]
-    FALSE     [reduce using rule 44 (Exp)]
     $default  reduce using rule 44 (Exp)
 
-    Exp  go to state 79
 
-
-State 101
+State 100
 
    41 Exp: Exp . '+' Exp
    42    | Exp . '-' Exp
@@ -1964,33 +1562,14 @@ State 101
    51    | Exp . AND Exp
    52    | Exp . OR Exp
    56    | Exp . ',' Exp
-   65    | Exp . Exp
-   67    | Exp . '+'
 
     S_PLUS   shift, and go to state 68
     S_MINUS  shift, and go to state 69
-    '!'      shift, and go to state 35
-    '('      shift, and go to state 36
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
 
-    '('       [reduce using rule 45 (Exp)]
-    ID        [reduce using rule 45 (Exp)]
-    C_INT     [reduce using rule 45 (Exp)]
-    C_FLOAT   [reduce using rule 45 (Exp)]
-    C_CHAR    [reduce using rule 45 (Exp)]
-    TRUE      [reduce using rule 45 (Exp)]
-    FALSE     [reduce using rule 45 (Exp)]
     $default  reduce using rule 45 (Exp)
 
-    Exp  go to state 79
 
-
-State 102
+State 101
 
    41 Exp: Exp . '+' Exp
    42    | Exp . '-' Exp
@@ -2004,8 +1583,6 @@ State 102
    51    | Exp AND Exp .
    52    | Exp . OR Exp
    56    | Exp . ',' Exp
-   65    | Exp . Exp
-   67    | Exp . '+'
 
     S_PLUS   shift, and go to state 68
     S_MINUS  shift, and go to state 69
@@ -2014,26 +1591,37 @@ State 102
     '*'      shift, and go to state 72
     '/'      shift, and go to state 73
     '%'      shift, and go to state 74
-    '!'      shift, and go to state 35
-    '('      shift, and go to state 36
     REL_OP   shift, and go to state 78
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
 
-    '('       [reduce using rule 51 (Exp)]
-    ID        [reduce using rule 51 (Exp)]
-    C_INT     [reduce using rule 51 (Exp)]
-    C_FLOAT   [reduce using rule 51 (Exp)]
-    C_CHAR    [reduce using rule 51 (Exp)]
-    TRUE      [reduce using rule 51 (Exp)]
-    FALSE     [reduce using rule 51 (Exp)]
     $default  reduce using rule 51 (Exp)
 
-    Exp  go to state 79
+
+State 102
+
+   41 Exp: Exp . '+' Exp
+   42    | Exp . '-' Exp
+   43    | Exp . '*' Exp
+   44    | Exp . '/' Exp
+   45    | Exp . '%' Exp
+   46    | Exp . REL_OP Exp
+   49    | Exp . S_PLUS
+   50    | Exp . S_MINUS
+   51    | Exp . AND Exp
+   52    | Exp . OR Exp
+   52    | Exp OR Exp .
+   56    | Exp . ',' Exp
+
+    S_PLUS   shift, and go to state 68
+    S_MINUS  shift, and go to state 69
+    '+'      shift, and go to state 70
+    '-'      shift, and go to state 71
+    '*'      shift, and go to state 72
+    '/'      shift, and go to state 73
+    '%'      shift, and go to state 74
+    AND      shift, and go to state 75
+    REL_OP   shift, and go to state 78
+
+    $default  reduce using rule 52 (Exp)
 
 
 State 103
@@ -2048,57 +1636,8 @@ State 103
    50    | Exp . S_MINUS
    51    | Exp . AND Exp
    52    | Exp . OR Exp
-   52    | Exp OR Exp .
-   56    | Exp . ',' Exp
-   65    | Exp . Exp
-   67    | Exp . '+'
-
-    S_PLUS   shift, and go to state 68
-    S_MINUS  shift, and go to state 69
-    '+'      shift, and go to state 70
-    '-'      shift, and go to state 71
-    '*'      shift, and go to state 72
-    '/'      shift, and go to state 73
-    '%'      shift, and go to state 74
-    AND      shift, and go to state 75
-    '!'      shift, and go to state 35
-    '('      shift, and go to state 36
-    REL_OP   shift, and go to state 78
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
-
-    '('       [reduce using rule 52 (Exp)]
-    ID        [reduce using rule 52 (Exp)]
-    C_INT     [reduce using rule 52 (Exp)]
-    C_FLOAT   [reduce using rule 52 (Exp)]
-    C_CHAR    [reduce using rule 52 (Exp)]
-    TRUE      [reduce using rule 52 (Exp)]
-    FALSE     [reduce using rule 52 (Exp)]
-    $default  reduce using rule 52 (Exp)
-
-    Exp  go to state 79
-
-
-State 104
-
-   41 Exp: Exp . '+' Exp
-   42    | Exp . '-' Exp
-   43    | Exp . '*' Exp
-   44    | Exp . '/' Exp
-   45    | Exp . '%' Exp
-   46    | Exp . REL_OP Exp
-   49    | Exp . S_PLUS
-   50    | Exp . S_MINUS
-   51    | Exp . AND Exp
-   52    | Exp . OR Exp
    56    | Exp . ',' Exp
    56    | Exp ',' Exp .
-   65    | Exp . Exp
-   67    | Exp . '+'
 
     S_PLUS   shift, and go to state 68
     S_MINUS  shift, and go to state 69
@@ -2109,29 +1648,12 @@ State 104
     '%'      shift, and go to state 74
     AND      shift, and go to state 75
     OR       shift, and go to state 76
-    '!'      shift, and go to state 35
-    '('      shift, and go to state 36
     REL_OP   shift, and go to state 78
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
 
-    '('       [reduce using rule 56 (Exp)]
-    ID        [reduce using rule 56 (Exp)]
-    C_INT     [reduce using rule 56 (Exp)]
-    C_FLOAT   [reduce using rule 56 (Exp)]
-    C_CHAR    [reduce using rule 56 (Exp)]
-    TRUE      [reduce using rule 56 (Exp)]
-    FALSE     [reduce using rule 56 (Exp)]
     $default  reduce using rule 56 (Exp)
 
-    Exp  go to state 79
 
-
-State 105
+State 104
 
    41 Exp: Exp . '+' Exp
    42    | Exp . '-' Exp
@@ -2145,8 +1667,6 @@ State 105
    51    | Exp . AND Exp
    52    | Exp . OR Exp
    56    | Exp . ',' Exp
-   65    | Exp . Exp
-   67    | Exp . '+'
 
     S_PLUS   shift, and go to state 68
     S_MINUS  shift, and go to state 69
@@ -2155,35 +1675,18 @@ State 105
     '*'      shift, and go to state 72
     '/'      shift, and go to state 73
     '%'      shift, and go to state 74
-    '!'      shift, and go to state 35
-    '('      shift, and go to state 36
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
 
-    '('       [reduce using rule 46 (Exp)]
-    ID        [reduce using rule 46 (Exp)]
-    C_INT     [reduce using rule 46 (Exp)]
-    C_FLOAT   [reduce using rule 46 (Exp)]
-    C_CHAR    [reduce using rule 46 (Exp)]
-    TRUE      [reduce using rule 46 (Exp)]
-    FALSE     [reduce using rule 46 (Exp)]
     $default  reduce using rule 46 (Exp)
 
-    Exp  go to state 79
 
-
-State 106
+State 105
 
    16 ParamList: Param ',' ParamList .
 
     $default  reduce using rule 16 (ParamList)
 
 
-State 107
+State 106
 
    35 Stmt: IF '(' Exp . ')' Stmt
    36     | IF '(' Exp . ')' Stmt ELSE Stmt
@@ -2198,8 +1701,6 @@ State 107
    51    | Exp . AND Exp
    52    | Exp . OR Exp
    56    | Exp . ',' Exp
-   65    | Exp . Exp
-   67    | Exp . '+'
 
     S_PLUS   shift, and go to state 68
     S_MINUS  shift, and go to state 69
@@ -2210,22 +1711,12 @@ State 107
     '%'      shift, and go to state 74
     AND      shift, and go to state 75
     OR       shift, and go to state 76
-    '!'      shift, and go to state 35
     ','      shift, and go to state 77
-    '('      shift, and go to state 36
-    ')'      shift, and go to state 114
+    ')'      shift, and go to state 113
     REL_OP   shift, and go to state 78
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
-
-    Exp  go to state 79
 
 
-State 108
+State 107
 
    37 Stmt: WHILE '(' Exp . ')' Stmt
    41 Exp: Exp . '+' Exp
@@ -2239,8 +1730,6 @@ State 108
    51    | Exp . AND Exp
    52    | Exp . OR Exp
    56    | Exp . ',' Exp
-   65    | Exp . Exp
-   67    | Exp . '+'
 
     S_PLUS   shift, and go to state 68
     S_MINUS  shift, and go to state 69
@@ -2251,29 +1740,19 @@ State 108
     '%'      shift, and go to state 74
     AND      shift, and go to state 75
     OR       shift, and go to state 76
-    '!'      shift, and go to state 35
     ','      shift, and go to state 77
-    '('      shift, and go to state 36
-    ')'      shift, and go to state 115
+    ')'      shift, and go to state 114
     REL_OP   shift, and go to state 78
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
-
-    Exp  go to state 79
 
 
-State 109
+State 108
 
    38 Stmt: RETURN Exp ';' .
 
     $default  reduce using rule 38 (Stmt)
 
 
-State 110
+State 109
 
    33 Stmt: ID '=' Exp . ';'
    41 Exp: Exp . '+' Exp
@@ -2287,8 +1766,6 @@ State 110
    51    | Exp . AND Exp
    52    | Exp . OR Exp
    56    | Exp . ',' Exp
-   65    | Exp . Exp
-   67    | Exp . '+'
 
     S_PLUS   shift, and go to state 68
     S_MINUS  shift, and go to state 69
@@ -2299,22 +1776,12 @@ State 110
     '%'      shift, and go to state 74
     AND      shift, and go to state 75
     OR       shift, and go to state 76
-    '!'      shift, and go to state 35
     ','      shift, and go to state 77
-    ';'      shift, and go to state 116
-    '('      shift, and go to state 36
+    ';'      shift, and go to state 115
     REL_OP   shift, and go to state 78
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
-
-    Exp  go to state 79
 
 
-State 111
+State 110
 
    34 Stmt: ID OP_ASSIGN Exp . ';'
    41 Exp: Exp . '+' Exp
@@ -2328,8 +1795,6 @@ State 111
    51    | Exp . AND Exp
    52    | Exp . OR Exp
    56    | Exp . ',' Exp
-   65    | Exp . Exp
-   67    | Exp . '+'
 
     S_PLUS   shift, and go to state 68
     S_MINUS  shift, and go to state 69
@@ -2340,31 +1805,21 @@ State 111
     '%'      shift, and go to state 74
     AND      shift, and go to state 75
     OR       shift, and go to state 76
-    '!'      shift, and go to state 35
     ','      shift, and go to state 77
-    ';'      shift, and go to state 117
-    '('      shift, and go to state 36
+    ';'      shift, and go to state 116
     REL_OP   shift, and go to state 78
-    ID       shift, and go to state 37
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
-
-    Exp  go to state 79
 
 
-State 112
+State 111
 
    63 Exp: ID '(' RParamList ')' .
 
     $default  reduce using rule 63 (Exp)
 
 
-State 113
+State 112
 
-   69 RParamList: RParam ',' . RParamList
+   66 RParamList: RParam ',' . RParamList
 
     S_PLUS   shift, and go to state 32
     S_MINUS  shift, and go to state 33
@@ -2378,17 +1833,49 @@ State 113
     TRUE     shift, and go to state 41
     FALSE    shift, and go to state 42
 
-    $default  reduce using rule 68 (RParamList)
+    $default  reduce using rule 65 (RParamList)
 
-    Exp         go to state 94
-    RParamList  go to state 118
-    RParam      go to state 96
+    Exp         go to state 93
+    RParamList  go to state 117
+    RParam      go to state 95
+
+
+State 113
+
+   35 Stmt: IF '(' Exp ')' . Stmt
+   36     | IF '(' Exp ')' . Stmt ELSE Stmt
+
+    S_PLUS   shift, and go to state 32
+    S_MINUS  shift, and go to state 33
+    '-'      shift, and go to state 34
+    '!'      shift, and go to state 35
+    '('      shift, and go to state 36
+    '{'      shift, and go to state 27
+    IF       shift, and go to state 50
+    WHILE    shift, and go to state 51
+    RETURN   shift, and go to state 52
+    STRUCT   shift, and go to state 1
+    ID       shift, and go to state 53
+    C_INT    shift, and go to state 38
+    C_FLOAT  shift, and go to state 39
+    C_CHAR   shift, and go to state 40
+    INT      shift, and go to state 2
+    FLOAT    shift, and go to state 3
+    CHAR     shift, and go to state 4
+    BOOL     shift, and go to state 5
+    TRUE     shift, and go to state 41
+    FALSE    shift, and go to state 42
+
+    VarDec      go to state 54
+    Specificer  go to state 30
+    CompSt      go to state 55
+    Stmt        go to state 118
+    Exp         go to state 58
 
 
 State 114
 
-   35 Stmt: IF '(' Exp ')' . Stmt
-   36     | IF '(' Exp ')' . Stmt ELSE Stmt
+   37 Stmt: WHILE '(' Exp ')' . Stmt
 
     S_PLUS   shift, and go to state 32
     S_MINUS  shift, and go to state 33
@@ -2420,75 +1907,43 @@ State 114
 
 State 115
 
-   37 Stmt: WHILE '(' Exp ')' . Stmt
-
-    S_PLUS   shift, and go to state 32
-    S_MINUS  shift, and go to state 33
-    '-'      shift, and go to state 34
-    '!'      shift, and go to state 35
-    '('      shift, and go to state 36
-    '{'      shift, and go to state 27
-    IF       shift, and go to state 50
-    WHILE    shift, and go to state 51
-    RETURN   shift, and go to state 52
-    STRUCT   shift, and go to state 1
-    ID       shift, and go to state 53
-    C_INT    shift, and go to state 38
-    C_FLOAT  shift, and go to state 39
-    C_CHAR   shift, and go to state 40
-    INT      shift, and go to state 2
-    FLOAT    shift, and go to state 3
-    CHAR     shift, and go to state 4
-    BOOL     shift, and go to state 5
-    TRUE     shift, and go to state 41
-    FALSE    shift, and go to state 42
-
-    VarDec      go to state 54
-    Specificer  go to state 30
-    CompSt      go to state 55
-    Stmt        go to state 120
-    Exp         go to state 58
-
-
-State 116
-
    33 Stmt: ID '=' Exp ';' .
 
     $default  reduce using rule 33 (Stmt)
 
 
-State 117
+State 116
 
    34 Stmt: ID OP_ASSIGN Exp ';' .
 
     $default  reduce using rule 34 (Stmt)
 
 
+State 117
+
+   66 RParamList: RParam ',' RParamList .
+
+    $default  reduce using rule 66 (RParamList)
+
+
 State 118
-
-   69 RParamList: RParam ',' RParamList .
-
-    $default  reduce using rule 69 (RParamList)
-
-
-State 119
 
    35 Stmt: IF '(' Exp ')' Stmt .
    36     | IF '(' Exp ')' Stmt . ELSE Stmt
 
-    ELSE  shift, and go to state 121
+    ELSE  shift, and go to state 120
 
     $default  reduce using rule 35 (Stmt)
 
 
-State 120
+State 119
 
    37 Stmt: WHILE '(' Exp ')' Stmt .
 
     $default  reduce using rule 37 (Stmt)
 
 
-State 121
+State 120
 
    36 Stmt: IF '(' Exp ')' Stmt ELSE . Stmt
 
@@ -2516,11 +1971,11 @@ State 121
     VarDec      go to state 54
     Specificer  go to state 30
     CompSt      go to state 55
-    Stmt        go to state 122
+    Stmt        go to state 121
     Exp         go to state 58
 
 
-State 122
+State 121
 
    36 Stmt: IF '(' Exp ')' Stmt ELSE Stmt .
 

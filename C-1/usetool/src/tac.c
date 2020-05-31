@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+code_node *TAC; //三地址码
+
 char *strcat0(char *s1,char *s2) {
     static char result[10];
     strcpy(result,s1);

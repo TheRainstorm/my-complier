@@ -7,6 +7,7 @@
 #include "parse.tab.h" //含yyparse()声明
 #include "symbol_table.h"
 #include "tac.h"
+#include "mips.h"
 #include "define.h"
 
 /**----------------EXTERN start---------------*/
@@ -21,12 +22,6 @@ void semantic_analysis(ast_node *root);
 
 /**----------------全局变量start---------------*/
 char g_file_name[FILE_NAME_MAX_LENGTH];
-//symbol table
-SYMBOL_TABLE ST;
-BLOCK_INDEX_TABLE BIT;
-uint symbol_hash_table[SYMBOL_TABLE_MAX_SIZE];
-
-code_node *TAC; //三地址码
 /**----------------全局变量end-----------------*/
 
 
@@ -49,17 +44,28 @@ int main(int argc, char *argv[]){
     }
     /*-----------------语法分析：构造AST树 end--------------------*/
     display(root, 0);
+    printf("\n\n\n");
 
     /*----------------------语义分析 start------------------------*/
     ST.top = BIT.top = 0;   //初始化符号表，块索引表
+    //默认有read 和 write函数
+    insert_symbol_table("read", 0, 0, 'F');
+    insert_symbol_table("write", 0, 1, 'F');
+
     location();
     print_symbol_table();
     print_block_index_table();
+
     semantic_analysis(root);
     relocation();
     /*----------------------语义分析 end--------------------------*/
 
     printIR(root->code);
+    printf("\n\n\n");
+
+    FILE *file = stdout;
+    genMips(root->code, file);
+
     ast_free(root);
     return 0;
 }

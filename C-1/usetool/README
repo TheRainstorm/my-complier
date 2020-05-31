@@ -1,0 +1,40 @@
+## environment
+
+- linux:
+no matter what
+
+- windows:
+MinGW + git bash
+
+## requirements
+
+1. gcc, make
+2. flex, bison
+
+## build
+
+`make`
+
+## run
+
+```bash
+make run  #use sample4 and output to ./tmp/output
+```
+
+or
+
+```bash
+`./my_gcc <specific_file> >./tmp/output`
+```
+
+## sample file description
+
+1. sample.c : the oldest file, test for the parser
+2. sample2.c : test for the semantic error
+3. sample3.c : test for generate IR code
+4. sample4.fibonacci.c : test for generate MIPS code
+
+## Makefile
+
+1. make: generate my_gcc program
+3. make clean: clean all obj files, binary, and bison output

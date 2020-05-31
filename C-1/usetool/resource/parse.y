@@ -173,9 +173,9 @@ Exp:
     | ID '(' RParamList ')' {$1->sibling=$3; $$=create_node2(yylloc.first_line, NT_FUNC_CALL, "expCall", (ast_node*)$1, NULL); }
     | ID '.' ID     {$1->sibling=(ast_node *)$3; $$=create_node2(yylloc.first_line, NT_DOT, "expDot", (ast_node*)$1, NULL);}
     /*常见错误*/
-    | Exp Exp       {$$=NULL; printf("缺少运算符"); }
-    | '(' Exp       {$$=NULL; printf("缺失右括号)"); }
-    | Exp '+'       {$$=NULL; printf("缺失操作数"); }
+    // | Exp Exp       {$$=NULL; printf("缺少运算符"); }
+    // | '(' Exp       {$$=NULL; printf("缺失右括号)"); }
+    // | Exp '+'       {$$=NULL; printf("缺失操作数"); }
 ;
 
 //实参列表

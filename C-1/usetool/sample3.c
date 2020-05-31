@@ -1,22 +1,5 @@
-int foo(int a, int b) {
-
-}
-
 int main() {
-    int a, b = 0;
-
-    a = 1 + ((a + b) + 2) * 3;
-    foo(a, foo(1 + 2, b));
-
-    if(a < b){
-       a = 0;
-    }else{
-        b = 0;
-        if(a==b){
-            a = 2 *b;
-        }
-    }
-
+    int a, b;
     a = 100;
     while(a > 0){
         b = a%2;

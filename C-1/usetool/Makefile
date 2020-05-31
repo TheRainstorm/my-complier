@@ -49,9 +49,7 @@ clean:
 	rm $(ObjFiles)
 
 move:
-	cp -r include /d/Projects/VS_projects/my_gcc/my_gcc
-	cp -r src /d/Projects/VS_projects/my_gcc/my_gcc
-sam:
-	cp sample3.c /d/Projects/VS_projects/my_gcc/my_gcc
+	cp -r /d/Projects/VS_projects/my_gcc/my_gcc/include .
+	cp -r /d/Projects/VS_projects/my_gcc/my_gcc/src .
 run:
-	./my_gcc.exe sample3.c >./tmp/output
+	./my_gcc.exe sample4_fibonacci.c >./tmp/output
